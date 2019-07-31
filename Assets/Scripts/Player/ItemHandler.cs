@@ -55,10 +55,10 @@ public class ItemHandler : MonoBehaviour
             {
                 itemHeld.transform.position = transform.position + (transform.up * vPos + transform.right * hPos + transform.forward).normalized;
                 itemHeld.transform.forward = transform.forward;
-                if (Input.GetMouseButtonDown(0))//drop
+                /*if (Input.GetMouseButtonDown(0))//drop
                 {
                     DropItem();
-                }
+                }*/
             }
         }
         else

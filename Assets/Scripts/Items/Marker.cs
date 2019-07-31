@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 //marks a spot for an enemy to come, then goes back to you
+
 public class Marker : Item
 {
     bool marked;
@@ -19,7 +20,7 @@ public class Marker : Item
         ih = ItemHandler.me;
         base.Awake();
     }
-    public void OnCollisionEnter(Collision collision)
+    /*public void OnCollisionEnter(Collision collision)
     {
         if (thrown && !creature.hasTarget)
         {
@@ -35,7 +36,7 @@ public class Marker : Item
                 ih = ItemHandler.me;
             }
         }
-    }
+    }*/
     private void Update()
     {
         if (marked)

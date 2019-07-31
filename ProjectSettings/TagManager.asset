@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Item
   - Destructible
+  - Creature
   layers:
   - Default
   - TransparentFX
@@ -15,8 +16,8 @@ TagManager:
   - UI
   - 
   - 
-  - 
-  - 
+  - Ground
+  - Obstacles
   - 
   - 
   - 
