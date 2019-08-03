@@ -24,11 +24,15 @@ public class Creature : MonoBehaviour
 
     //testing!
     RimColorInfo rci;
+    TextMesh text;
 
     //test jump
     float jumpForce = 5;
     Rigidbody rb;
     int jumpTimeOffset;
+
+    //test soundmaking
+    SoundMaker sm;
     // Start is called before the first frame update
     void Start()
     {
@@ -41,11 +45,20 @@ public class Creature : MonoBehaviour
         rci = GetComponent<RimColorInfo>();
         rb = GetComponent<Rigidbody>();
         jumpTimeOffset = Random.Range(0, 9);
+        text = transform.GetChild(0).GetComponent<TextMesh>();
+        //test soundmaking
+        sm = GetComponent<SoundMaker>();
     }
 
     // Update is called once per frame
     void Update()
     {
+        //test soundmaking
+        if(Random.value < 0.01f)
+        {
+            sm.MakeSound(0);
+        }
+        text.text = heardNotes;
         //deal with pathfinding
         if (Mathf.Round(Time.time * 60f) % 10 == jumpTimeOffset)//every 5 frames??
         {
@@ -102,7 +115,7 @@ public class Creature : MonoBehaviour
         if(lastHeardSounds.Count > 0)
         {
             //forget old notes!
-            if(Time.time > lastHeardSounds[0].timePlayed + SoundMaker.me.noteLength)
+            if(Time.time > lastHeardSounds[0].timePlayed + 2f)
             {
                 Debug.Log("Forgot "+lastHeardSounds[0].note);
                 lastHeardSounds.Remove(lastHeardSounds[0]);

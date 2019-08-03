@@ -49,6 +49,8 @@ namespace UnityStandardAssets.Characters.FirstPerson
         private bool m_Jumping;
         private AudioSource m_AudioSource;
 
+        //shit I added
+        PlayerSoundController psc;
         // Use this for initialization
         private void Start()
         {
@@ -63,6 +65,8 @@ namespace UnityStandardAssets.Characters.FirstPerson
             m_Jumping = false;
             m_AudioSource = GetComponent<AudioSource>();
 			m_MouseLook.Init(transform , m_Camera.transform);
+            //shit I added
+            psc = GetComponent<PlayerSoundController>();
         }
 
 
@@ -148,7 +152,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
             GetInput(out speed);
             // always move along the camera forward as it is the direction that it being aimed at
             Vector3 desiredMove = transform.forward*m_Input.y + transform.right*m_Input.x;
-            if (SoundMaker.me.makingSound)
+            if (psc.makingSound)
             {
                 desiredMove = Vector3.zero;
             }
