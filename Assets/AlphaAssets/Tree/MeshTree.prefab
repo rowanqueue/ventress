@@ -9,8 +9,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 533047250683104689}
-  m_Layer: 0
-  m_Name: treeTest (1)
+  m_Layer: 9
+  m_Name: MeshTree
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -23,7 +23,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3548443424902479778}
-  m_LocalRotation: {x: -0, y: 0.9811594, z: -0, w: 0.1932004}
+  m_LocalRotation: {x: 0, y: 0.98115975, z: 0, w: 0.19319843}
   m_LocalPosition: {x: 5.3, y: 0.0019833695, z: 7.3}
   m_LocalScale: {x: 2.5085, y: 2.5085, z: 2.5085}
   m_Children:
@@ -43,7 +43,7 @@ GameObject:
   - component: {fileID: 7299170488808475226}
   - component: {fileID: 2047306226016773802}
   - component: {fileID: 4764658221969998944}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: default
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -86,11 +86,10 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 2
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: -3033667219593020291, guid: c37cf4aad2f77ab43b540e690e014277, type: 3}
+  - {fileID: 2100000, guid: db55ebdb9473a4a80a0037f64aafccce, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

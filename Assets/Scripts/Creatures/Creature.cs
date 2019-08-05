@@ -17,7 +17,7 @@ public class Creature : MonoBehaviour
     public int wanderState = 0;//0: stay near, 1: go far
     AIDestinationSetter goAi;
     WanderingDestinationSetter wanderAI;
-    AIPath ai;
+    RichAI ai;
 
     float whenJoined; //when started following
     float followTime = 5f;
@@ -38,7 +38,7 @@ public class Creature : MonoBehaviour
     {
         goAi = GetComponent<AIDestinationSetter>();
         wanderAI = GetComponent<WanderingDestinationSetter>();
-        ai = GetComponent<AIPath>();
+        ai = GetComponent<RichAI>();
         lastHeardSounds = new List<Sound>();
         nextDecision = Random.Range(0, brainTime);
         //testing!
@@ -48,6 +48,9 @@ public class Creature : MonoBehaviour
         text = transform.GetChild(0).GetComponent<TextMesh>();
         //test soundmaking
         sm = GetComponent<SoundMaker>();
+        //randomize size
+        float size = Random.Range(0.5f, 1.5f)*transform.localScale.x;
+        transform.localScale = new Vector3(size, size, size);
     }
 
     // Update is called once per frame

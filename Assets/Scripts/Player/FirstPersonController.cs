@@ -13,6 +13,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
         [SerializeField] private bool m_IsWalking;
         [SerializeField] private float m_WalkSpeed;
         [SerializeField] private float m_RunSpeed;
+        [SerializeField] private float m_CrouchSpeed;
         [SerializeField] [Range(0f, 1f)] private float m_RunstepLenghten;
         [SerializeField] private float m_JumpSpeed;
         [SerializeField] private float m_StickToGroundForce;
@@ -27,6 +28,12 @@ namespace UnityStandardAssets.Characters.FirstPerson
         [SerializeField] private AudioClip[] m_FootstepSounds;    // an array of footstep sounds that will be randomly selected from.
         [SerializeField] private AudioClip m_JumpSound;           // the sound played when character leaves the ground.
         [SerializeField] private AudioClip m_LandSound;           // the sound played when character touches back on ground.
+
+        bool cursorLocked = true;
+        bool crouching = false;
+        float actualHeight = 1.8f;
+        float crouchHeight = 0.6f;
+        Camera cam;
 
         private Camera m_Camera;
         private bool m_Jump;
@@ -47,6 +54,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
         // Use this for initialization
         private void Start()
         {
+            cam = Camera.main;
             m_CharacterController = GetComponent<CharacterController>();
             m_Camera = Camera.main;
             m_OriginalCameraPosition = m_Camera.transform.localPosition;
@@ -85,6 +93,48 @@ namespace UnityStandardAssets.Characters.FirstPerson
             }
 
             m_PreviouslyGrounded = m_CharacterController.isGrounded;
+            //i added
+            if (Input.GetKey(KeyCode.Escape))
+            {
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
+                cursorLocked = false;
+            }
+            if (Input.GetMouseButtonDown(0) && !cursorLocked)
+            {
+                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = false;
+                cursorLocked = true;
+            }
+            if (Input.GetKeyDown(KeyCode.LeftControl))
+            {
+                if((crouching && m_CharacterController.height == crouchHeight) || (!crouching && m_CharacterController.height == actualHeight))
+                {
+                    crouching = !crouching;
+                }
+            }
+            if(crouching){
+                if(m_CharacterController.height > crouchHeight)
+                {
+                    m_CharacterController.height -= Time.deltaTime * 8f;
+                }
+                else
+                {
+                    m_CharacterController.height = crouchHeight;
+                }
+            }
+            else
+            {
+                if (m_CharacterController.height < actualHeight)
+                {
+                    m_CharacterController.height += Time.deltaTime * 8f;
+                }
+                else
+                {
+                    m_CharacterController.height = actualHeight;
+                }
+            }
+
         }
 
 
@@ -139,7 +189,6 @@ namespace UnityStandardAssets.Characters.FirstPerson
 
             m_MouseLook.UpdateCursorLock();
         }
-
 
         private void PlayJumpSound()
         {
@@ -223,6 +272,10 @@ namespace UnityStandardAssets.Characters.FirstPerson
 #endif
             // set the desired speed to be walking or running
             speed = m_IsWalking ? m_WalkSpeed : m_RunSpeed;
+            if (crouching)
+            {
+                speed = m_CrouchSpeed;
+            }
             m_Input = new Vector2(horizontal, vertical);
 
             // normalize input if it exceeds 1 in combined length:
@@ -243,7 +296,10 @@ namespace UnityStandardAssets.Characters.FirstPerson
 
         private void RotateView()
         {
-            m_MouseLook.LookRotation (transform, m_Camera.transform);
+            if (cursorLocked)
+            {
+                m_MouseLook.LookRotation(transform, m_Camera.transform);
+            }
         }
 
 

@@ -1425,6 +1425,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Puffball (8)
       objectReference: {fileID: 0}
+    - target: {fileID: 929851115894994715, guid: ab3c157f6cd05424da1465814e7a8721,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 929851115894994706, guid: ab3c157f6cd05424da1465814e7a8721,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1503,6 +1508,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Puffball (6)
+      objectReference: {fileID: 0}
+    - target: {fileID: 929851115894994715, guid: ab3c157f6cd05424da1465814e7a8721,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 929851115894994706, guid: ab3c157f6cd05424da1465814e7a8721,
         type: 3}
@@ -4148,6 +4158,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Puffball (14)
       objectReference: {fileID: 0}
+    - target: {fileID: 929851115894994715, guid: ab3c157f6cd05424da1465814e7a8721,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 929851115894994706, guid: ab3c157f6cd05424da1465814e7a8721,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -4806,6 +4821,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_UseHeadBob
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 571410532831397551, guid: 64ac693bbec019747b72b78bf8caa47a,
+        type: 3}
+      propertyPath: m_CrouchSpeed
+      value: 2.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 64ac693bbec019747b72b78bf8caa47a, type: 3}
@@ -5917,6 +5937,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Puffball (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 929851115894994715, guid: ab3c157f6cd05424da1465814e7a8721,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 929851115894994706, guid: ab3c157f6cd05424da1465814e7a8721,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -6427,6 +6452,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Puffball (4)
+      objectReference: {fileID: 0}
+    - target: {fileID: 929851115894994715, guid: ab3c157f6cd05424da1465814e7a8721,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 929851115894994706, guid: ab3c157f6cd05424da1465814e7a8721,
         type: 3}
@@ -8301,6 +8331,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Puffball (12)
       objectReference: {fileID: 0}
+    - target: {fileID: 929851115894994715, guid: ab3c157f6cd05424da1465814e7a8721,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 929851115894994706, guid: ab3c157f6cd05424da1465814e7a8721,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -9460,6 +9495,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Puffball (10)
       objectReference: {fileID: 0}
+    - target: {fileID: 929851115894994715, guid: ab3c157f6cd05424da1465814e7a8721,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 929851115894994706, guid: ab3c157f6cd05424da1465814e7a8721,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -9593,6 +9633,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 929851115894994706, guid: ab3c157f6cd05424da1465814e7a8721,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 929851115894994713, guid: ab3c157f6cd05424da1465814e7a8721,
         type: 3}
