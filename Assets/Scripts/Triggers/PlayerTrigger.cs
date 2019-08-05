@@ -11,7 +11,7 @@ public class PlayerTrigger : MonoBehaviour
     {
         if (other.tag.Equals("Player"))
         {
-            Debug.Log("A");
+           //Debug.Log("A");
             myEvent.Invoke();
         }
     }

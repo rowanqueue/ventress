@@ -15,7 +15,7 @@ public class RimEbbEffect : MonoBehaviour
             offset = Random.Range(0, 1000);
         }
         mr = GetComponent<MeshRenderer>();
-        Debug.Log(mr.material.GetFloat("_RimPower"));
+        //Debug.Log(mr.material.GetFloat("_RimPower"));
     }
 
     // Update is called once per frame

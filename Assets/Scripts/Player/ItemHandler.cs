@@ -8,6 +8,7 @@ public class ItemHandler : MonoBehaviour
     static public ItemHandler me;
     //situational data
     public bool holdingItem;
+    public float grabRange;
     Item itemHeld;
     float whenDropped;//so you don't pick up the same thing instantly after
 
@@ -34,15 +35,15 @@ public class ItemHandler : MonoBehaviour
     {
         if(holdingItem)
         {
-            if (Input.GetMouseButton(0))
+            if (Input.GetMouseButton(1) || Input.GetKey(KeyCode.Q))
             {
                 Vector3 forceDirection = (cam.transform.forward + cam.transform.up * upHelp).normalized;
                 Debug.DrawLine(itemHeld.transform.position, itemHeld.transform.position + forceDirection, Color.yellow);
                 itemHeld.transform.position = transform.position + (cam.transform.up * vPos + cam.transform.right * 0f + cam.transform.forward).normalized;
                 itemHeld.transform.forward = cam.transform.forward;
-                if (Input.GetMouseButtonDown(1))//throw
+                if (Input.GetMouseButtonDown(0))//throw
                 {
-                    itemHeld.PutDown();
+                    itemHeld.Throw();
                     holdingItem = false;
                     //Vector3 forceDirection = (cam.transform.forward + cam.transform.up * 0.5f).normalized;
 
@@ -54,10 +55,10 @@ public class ItemHandler : MonoBehaviour
             {
                 itemHeld.transform.position = transform.position + (transform.up * vPos + transform.right * hPos + transform.forward).normalized;
                 itemHeld.transform.forward = transform.forward;
-                if (Input.GetMouseButtonDown(1))//drop
+                /*if (Input.GetMouseButtonDown(0))//drop
                 {
                     DropItem();
-                }
+                }*/
             }
         }
         else
@@ -80,17 +81,21 @@ public class ItemHandler : MonoBehaviour
     }
     void CheckInteraction()
     {
-        float distance = 2.5f;
+        float distance = grabRange;
         RaycastHit[] hits = Physics.RaycastAll(cam.transform.position, cam.transform.forward, distance);
         foreach(RaycastHit hit in hits)
         {
             if (hit.transform.tag == "Item")
             {
-                itemHeld = hit.transform.GetComponent<Item>();
-                itemHeld.PickUp();
-                holdingItem = true;
+                PickUpItem(hit.transform.GetComponent<Item>());
                 break;
             }
         }
+    }
+    public void PickUpItem(Item item)
+    {
+        itemHeld = item;
+        item.PickUp();
+        holdingItem = true;
     }
 }
