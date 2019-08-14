@@ -66,7 +66,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
             m_AudioSource = GetComponent<AudioSource>();
 			m_MouseLook.Init(transform , m_Camera.transform);
             //shit I added
-            psc = GetComponent<PlayerSoundController>();
+            psc = GetComponentInChildren<PlayerSoundController>();
         }
 
 

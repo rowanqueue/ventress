@@ -8,8 +8,13 @@ public class SoundMaker : MonoBehaviour
  // public sta SoundMaker me;
     public float noteLength;//how long does a creature remember a sound?
     List<Creature> creatures;
+    AudioSource audio;
     //sound notes w,a,s,d
     List<char> notes = new List<char> { 'w', 'a', 's', 'd' };
+    void Awake()
+    {
+        audio = GetComponent<AudioSource>();
+    }
     List<Creature> DetectNearbyCreatures()
     {
         List<Creature> creatures = new List<Creature>();
@@ -40,5 +45,9 @@ public class SoundMaker : MonoBehaviour
         char whatNote = notes[i];
         creatures = DetectNearbyCreatures();
         AffectCreatures(whatNote);
+        if(whatNote == 'w')
+        {
+            audio.PlayOneShot(audio.clip);
+        }
     }
 }

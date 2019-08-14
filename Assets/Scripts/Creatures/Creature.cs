@@ -6,7 +6,7 @@ using Pathfinding;
 //a test creature for testing out sounds
 public class Creature : MonoBehaviour
 {
-
+    CreatureMind mind;
     public List<Sound> lastHeardSounds;
     public string heardNotes;
 
@@ -36,6 +36,7 @@ public class Creature : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        mind = GetComponent<CreatureMind>();
         goAi = GetComponent<AIDestinationSetter>();
         wanderAI = GetComponent<WanderingDestinationSetter>();
         ai = GetComponent<RichAI>();
@@ -48,9 +49,6 @@ public class Creature : MonoBehaviour
         text = transform.GetChild(0).GetComponent<TextMesh>();
         //test soundmaking
         sm = GetComponent<SoundMaker>();
-        //randomize size
-        float size = Random.Range(0.5f, 1.5f)*transform.localScale.x;
-        transform.localScale = new Vector3(size, size, size);
     }
 
     // Update is called once per frame
@@ -108,9 +106,23 @@ public class Creature : MonoBehaviour
                 wanderState = -1;
                 wanderAI.enabled = false;
                 goAi.enabled = true;
-                if(Time.time > whenJoined + followTime && Vector3.Distance(goAi.target.position,transform.position) > 5f)
+                /*if(Time.time > whenJoined + followTime && Vector3.Distance(goAi.target.position,transform.position) > 5f)
                 {
                     SetPathState(0);
+                }*/
+                if (goAi.ready && mind.action == "eat")
+                {
+                    mind.Eat();
+                    SetPathState(0);
+                    mind.Decide();
+                }
+                if(goAi.ready && mind.action == "shelter")
+                {
+                    //write a path state that lets them wander BUT keeps them within a certain range
+                }
+                if(goAi.ready && mind.action == "play")
+                {
+                    //write a path state for playing
                 }
                 break;
         }
@@ -158,6 +170,24 @@ public class Creature : MonoBehaviour
         if (isGrounded)
         {
             rb.AddForce(Vector3.up * (jumpForce*Random.Range(0.3f,0.5f)), ForceMode.Impulse);
+        }
+    }
+    public void SetAction(string action, Transform target)
+    {
+        if(action == "eat")
+        {
+            SetPathState(1);
+            goAi.target = target;
+        }
+        if(action == "shelter")
+        {
+            SetPathState(1);
+            goAi.target = target;
+        }
+        if(action == "play")
+        {
+            SetPathState(1);
+            goAi.target = target;
         }
     }
 }
