@@ -203,9 +203,9 @@ public class CreatureMind : MonoBehaviour
             else if (shelter < 0.1f)//they're more desperate for shelter
             {
                 //bool isAShelterNearby = Random.value < 0.5f;//maybe go to a different shelter
-                action = "Go to a different shelter";
-                creature.SetAction(action, tribe.shelter);//will make this actually work later
-                return;
+                //action = "Go to a different shelter";
+                //creature.SetAction(action, tribe.shelter);//will make this actually work later
+                //return;
             }
         }
         if(play < 0.5f*fun)
@@ -240,6 +240,10 @@ public class CreatureMind : MonoBehaviour
     }
     bool isMyShelterNearby(float distance)
     {
+        if(tribe == null)
+        {
+            return false;
+        }
         bool isIt = false;
         if(Vector3.Distance(transform.position, tribe.shelter.position) < distance)
         {
