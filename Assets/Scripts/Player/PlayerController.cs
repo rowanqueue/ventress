@@ -27,12 +27,15 @@ public class PlayerController : MonoBehaviour
     Camera cam;
     Vector3 itemHeldOffset;
     Vector3 groundContactNormal = Vector3.up;//the slope of whatever you're standing on
+    LayerMask layerGround;
+
     // Start is called before the first frame update
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
         collider = GetComponent<CapsuleCollider>();
         cam = Camera.main;
+        layerGround = LayerMask.NameToLayer("Ground");
     }
 
     // Update is called once per frame
@@ -55,9 +58,13 @@ public class PlayerController : MonoBehaviour
         //items
         if (Input.GetMouseButtonDown(0))
         {
-            CheckInteraction();
+            //CheckInteraction();
         }
-        if(itemHeld != null)
+        if (Input.GetMouseButtonUp(0))
+        {
+            //CheckInteraction();
+        }
+        if (itemHeld != null)
         {
             itemHeld.transform.position = transform.position + (transform.up*verticalPos + transform.right*horizontalPos + transform.forward).normalized;
             itemHeld.transform.forward = transform.forward;
@@ -80,7 +87,7 @@ public class PlayerController : MonoBehaviour
         {
             if(hit.transform.tag == "Item")
             {
-                itemHeld = hit.transform.gameObject;
+                //itemHeld = hit.transform.gameObject;
             }
         }
     }
@@ -119,9 +126,14 @@ public class PlayerController : MonoBehaviour
                 return false;
             }
         }
+        if (Input.GetMouseButton(0))
+        {
+           return false;
+        }
+        
         return true;
     }
-    bool isGrounded()
+    public bool isGrounded()
     {
         float distanceToPoints = collider.height / 2 - collider.radius;
         Vector3 point1 = transform.position + collider.center + Vector3.up * distanceToPoints;
@@ -130,7 +142,7 @@ public class PlayerController : MonoBehaviour
         RaycastHit[] hits = Physics.CapsuleCastAll(point1, point2, collider.radius, transform.up*-1f, castDistance);
         foreach (RaycastHit hit in hits)
         {
-            if (hit.transform.tag == "Wall")
+            if (hit.transform.gameObject.layer == layerGround)
             {
                 groundContactNormal = hit.normal;
                 return true;
