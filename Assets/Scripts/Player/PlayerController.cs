@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
@@ -11,10 +12,13 @@ public class PlayerController : MonoBehaviour
     public float walkSpeed;
     public float runSpeed;
     public float jumpSpeed;
+    public float talkSpeed = 0.1f; //multiplies run/walk speed while talking
+    public float slowSpeed = 0.5f;
 
     //testing data
     public float verticalPos;
     public float horizontalPos;
+    public bool isSpeaking;
 
     //situation data
     public GameObject itemHeld;
@@ -59,10 +63,12 @@ public class PlayerController : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             //CheckInteraction();
+            isSpeaking = true;
         }
         if (Input.GetMouseButtonUp(0))
         {
             //CheckInteraction();
+            isSpeaking = false;
         }
         if (itemHeld != null)
         {
@@ -70,6 +76,16 @@ public class PlayerController : MonoBehaviour
             itemHeld.transform.forward = transform.forward;
         }
         //end items
+
+        //time slow
+        if (isSpeaking)
+        {
+            Time.timeScale = slowSpeed;
+        }
+        else
+        {
+            Time.timeScale = 1f;
+        }
     }
     private void FixedUpdate()
     {
@@ -96,11 +112,25 @@ public class PlayerController : MonoBehaviour
         Vector3 yVel = new Vector3(0, rb.velocity.y, 0);
         if (running)
         {
-            rb.velocity = moveDirection * runSpeed * Time.deltaTime;
+            if (isSpeaking)
+            {
+                rb.velocity = moveDirection * runSpeed * talkSpeed * Time.deltaTime;
+            }
+            else
+            {
+                rb.velocity = moveDirection * runSpeed * Time.deltaTime;
+            }
         }
         else
         {
-            rb.velocity = moveDirection * walkSpeed * Time.deltaTime;
+            if (isSpeaking)
+            {
+                rb.velocity = moveDirection * walkSpeed * talkSpeed * Time.deltaTime;
+            }
+            else
+            {
+                rb.velocity = moveDirection * walkSpeed * Time.deltaTime;
+            }
         }
         rb.velocity += yVel;
     }
@@ -128,7 +158,7 @@ public class PlayerController : MonoBehaviour
         }
         if (Input.GetMouseButton(0))
         {
-           return false;
+            //return false;
         }
         
         return true;
