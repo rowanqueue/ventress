@@ -14,7 +14,7 @@ public class PlayerSoundController : MonoBehaviour
     void Update()
     {
         makingSound = Input.GetMouseButton(0);
-        if (makingSound)
+        /*if (makingSound)
         {
             if (Input.GetKeyDown(KeyCode.W))
             {
@@ -33,6 +33,6 @@ public class PlayerSoundController : MonoBehaviour
                 sm.MakeSound(3);
             }
 
-        }
+        }*/
     }
 }

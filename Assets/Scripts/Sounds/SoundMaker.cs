@@ -33,22 +33,16 @@ public class SoundMaker : MonoBehaviour
         }
         return creatures;
     }
-    void AffectCreatures(char note)
+    void AffectCreatures(Command cmd)
     {
-        Sound sound = new Sound(note, Time.time,transform);
         foreach(Creature creature in creatures)
         {
-            creature.Hear(sound);
+            creature.Hear(cmd);
         }
     }
-    public void MakeSound(int i)
+    public void MakeSound(Command cmd)
     {
-        char whatNote = notes[i];
         creatures = DetectNearbyCreatures();
-        AffectCreatures(whatNote);
-        if(whatNote == 'w')
-        {
-            audio.PlayOneShot(audio.clip);
-        }
+        AffectCreatures(cmd);
     }
 }

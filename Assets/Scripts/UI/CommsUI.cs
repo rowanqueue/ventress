@@ -16,6 +16,8 @@ public class CommsUI : MonoBehaviour
     public Color textColor;
     CanvasGroup group;
 
+    public SoundMaker sm;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -86,6 +88,7 @@ public class CommsUI : MonoBehaviour
                  group.alpha = Mathf.Lerp(1, 0, t);
             }));
             //keys.SetActive(false);
+            Language.TakeMessage(ticker.text,sm);
             ticker.text = null;
             letter_w.color = textColor;
             letter_a.color = textColor;

@@ -3,11 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 
 //start test of what the creature should think, largely for debugging rn
+//what the creature thinks!!
 public class CreatureMind : MonoBehaviour
 {
     Creature creature;
     //stats
-    public float size;//0.5-1.5, babies start at 0.25 of their adult size and grow
+    public float Size
+    {
+        get { return size * currentBabyPercent; }//get the ACTUAL SIZE AT THIS MOMENT
+    }
+    float size;//0.5-1.5, babies start at 0.25 of their adult size and grow
     public float age;//0 is baby, 1 is adult, 3 is dead
 
     public float bravery;//these numbers are multiplied by 0.5 to generate whatever threshold
@@ -26,6 +31,11 @@ public class CreatureMind : MonoBehaviour
 
     //tribe
     public Tribe tribe;
+    public bool isChief;
+    public bool IsFollowingChief
+    {
+        get { return creature.pathState == 1 && creature.Target != null && creature.Target == tribe.chief.transform; }
+    }
 
     //action
     public string action;
@@ -81,6 +91,14 @@ public class CreatureMind : MonoBehaviour
         {
             Decide();
             nextDecisionTime = Time.time + decisionPeriod;
+            //test screaming
+            if (isChief)
+            {
+                if (!tribe.TribeFollowingChief())//tribe aint following the chief
+                {
+                    creature.Speak("wa a");//chief tells followers to follow them
+                }
+            }
         }
     }
     public void UpdateNeeds()//another tick in the needs
