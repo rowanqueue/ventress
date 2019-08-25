@@ -19,6 +19,7 @@ public class PlayerController : MonoBehaviour
     public float horizontalPos;
     public bool isSpeaking;
     private bool safeRelease; //true after comms exit lerping is complete
+	private bool lookEnabled;
 
     //situation data
     public GameObject itemHeld;
@@ -32,6 +33,7 @@ public class PlayerController : MonoBehaviour
     Vector3 itemHeldOffset;
     Vector3 groundContactNormal = Vector3.up;//the slope of whatever you're standing on
     LayerMask layerGround;
+    MouseLook mouseLook;
 
     // Start is called before the first frame update
     void Awake()
@@ -41,6 +43,7 @@ public class PlayerController : MonoBehaviour
         cam = Camera.main;
         layerGround = LayerMask.NameToLayer("Ground");
         //Cursor.lockState = CursorLockMode.None;
+        mouseLook = cam.gameObject.GetComponent<MouseLook>();
     }
 
     // Update is called once per frame
@@ -61,10 +64,21 @@ public class PlayerController : MonoBehaviour
         running = Input.GetKey(KeyCode.LeftShift);
         //end movement
         //items
+
+        //disables mouselook when esc is pressed
+        if (Input.GetKeyDown(KeyCode.Escape))
+		{
+			mouseLook.enabled = false;
+			lookEnabled = false;
+		}
         if (Input.GetMouseButtonDown(0))
         {
-            //CheckInteraction();
-            isSpeaking = true;
+            if (lookEnabled == false)
+			{
+				mouseLook.enabled = true;
+			}
+			//CheckInteraction();
+			isSpeaking = true;
             Cursor.visible = true;
             Cursor.lockState = CursorLockMode.Confined;
             StartCoroutine(Coroutines.DoOverEasedTime(0.1f, Easing.Linear, t =>
