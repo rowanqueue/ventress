@@ -12,11 +12,17 @@ public class CommsUI : MonoBehaviour
     public Image letter_d;
     public Image bg;
     public GameObject keys;
+    public Text ticker;
+    public Color textColor;
+    CanvasGroup group;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        ticker.text = null;
+        textColor = new Color(254, 207, 255);
+        group = gameObject.GetComponent<CanvasGroup>();
+        group.alpha = 0;
     }
 
     // Update is called once per frame
@@ -24,47 +30,67 @@ public class CommsUI : MonoBehaviour
     {
         if (Input.GetMouseButton(0))
         {
-            keys.SetActive(true);
-            if (Input.GetKey(KeyCode.W))
+           // keys.SetActive(true);
+            if (Input.GetKeyDown(KeyCode.W))
             {
                 letter_w.color = Color.cyan;
+                ticker.text += "w";
             }
-            else
+            else if (Input.GetKeyUp(KeyCode.W))
             {
-                letter_w.color = Color.white;
+                letter_w.color = textColor;
             }
-            if (Input.GetKey(KeyCode.A))
+            if (Input.GetKeyDown(KeyCode.A))
             {
                 letter_a.color = Color.cyan;
+                ticker.text += "a";
             }
-            else
+            else if (Input.GetKeyUp(KeyCode.A))
             {
-                letter_a.color = Color.white;
+                letter_a.color = textColor;
             }
-            if (Input.GetKey(KeyCode.S))
+            if (Input.GetKeyDown(KeyCode.S))
             {
                 letter_s.color = Color.cyan;
+                ticker.text += "s";
             }
-            else
+            else if (Input.GetKeyUp(KeyCode.S))
             {
-                letter_s.color = Color.white;
+                letter_s.color = textColor;
             }
-            if (Input.GetKey(KeyCode.D))
+            if (Input.GetKeyDown(KeyCode.D))
             {
                 letter_d.color = Color.cyan;
+                ticker.text += "d";
             }
-            else
+            else if (Input.GetKeyUp(KeyCode.D))
             {
-                letter_d.color = Color.white;
+                letter_d.color = textColor;
+            }
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                ticker.text += " ";
             }
         }
-        else
+        if (Input.GetMouseButtonDown(0))
         {
-            keys.SetActive(false);
-            letter_w.color = Color.white;
-            letter_a.color = Color.white;
-            letter_s.color = Color.white;
-            letter_d.color = Color.white;
+            StartCoroutine(Coroutines.DoOverEasedTime(0.1f, Easing.Linear, t =>
+            {
+                group.alpha = Mathf.Lerp(0, 1, t);
+            }));
+        }
+        else if (Input.GetMouseButtonUp(0))
+        {
+            StartCoroutine(Coroutines.DoOverEasedTime(0.1f, Easing.Linear, t =>
+            {
+                 group.alpha = Mathf.Lerp(1, 0, t);
+            }));
+            //keys.SetActive(false);
+            ticker.text = null;
+            letter_w.color = textColor;
+            letter_a.color = textColor;
+            letter_s.color = textColor;
+            letter_d.color = textColor;
         }
     }
 }

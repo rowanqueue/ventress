@@ -13,8 +13,8 @@ public class PlayerController : MonoBehaviour
     public float runSpeed;
     public float jumpSpeed;
     public float talkSpeed = 0.1f; //multiplies run/walk speed while talking
-    public float slowSpeed = 0.5f;
-
+    public float slowSpeed = 0.5f; //multiplies time.timeScale
+    
     //testing data
     public float verticalPos;
     public float horizontalPos;
@@ -64,11 +64,21 @@ public class PlayerController : MonoBehaviour
         {
             //CheckInteraction();
             isSpeaking = true;
+            
+            StartCoroutine(Coroutines.DoOverEasedTime(0.1f, Easing.Linear, t =>
+            {
+                cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, 57, t);
+            }));
         }
         if (Input.GetMouseButtonUp(0))
         {
             //CheckInteraction();
             isSpeaking = false;
+            StartCoroutine(Coroutines.DoOverEasedTime(0.1f, Easing.Linear, t =>
+            {
+                cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, 47, t);
+            }));
+
         }
         if (itemHeld != null)
         {
