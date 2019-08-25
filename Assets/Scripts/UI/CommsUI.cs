@@ -16,6 +16,8 @@ public class CommsUI : MonoBehaviour
     public Color textColor;
     CanvasGroup group;
 
+    //testing
+
     // Start is called before the first frame update
     void Start()
     {
@@ -74,23 +76,33 @@ public class CommsUI : MonoBehaviour
         }
         if (Input.GetMouseButtonDown(0))
         {
-            StartCoroutine(Coroutines.DoOverEasedTime(0.1f, Easing.Linear, t =>
+            StartCoroutine(Coroutines.DoOverEasedTime(0.05f, Easing.Linear, t =>
             {
                 group.alpha = Mathf.Lerp(0, 1, t);
             }));
         }
         else if (Input.GetMouseButtonUp(0))
         {
-            StartCoroutine(Coroutines.DoOverEasedTime(0.1f, Easing.Linear, t =>
+            StartCoroutine(Coroutines.DoOverEasedTime(0.2f, Easing.Linear, t =>
             {
-                 group.alpha = Mathf.Lerp(1, 0, t);
+                 group.alpha = Mathf.Lerp(1, -0.2f, t);
             }));
-            //keys.SetActive(false);
-            ticker.text = null;
+            StartCoroutine(KillAlpha());
+			//keys.SetActive(false);
+			ticker.text = null;
             letter_w.color = textColor;
             letter_a.color = textColor;
             letter_s.color = textColor;
             letter_d.color = textColor;
+        }
+    }
+
+    IEnumerator KillAlpha()
+    {
+        yield return new WaitForSeconds(.2f);
+        if (!Input.GetMouseButton(0))
+        {
+            group.alpha = 0;
         }
     }
 }
