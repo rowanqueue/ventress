@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using Pathfinding;
 
-//a test creature for testing out sounds
+//what the creature does!!
 public class Creature : MonoBehaviour
 {
-
-    public List<Sound> lastHeardSounds;
-    public string heardNotes;
+    CreatureMind mind;
 
     //handle pathfinding
     public int pathState = 0;//0: wander, 1: go
@@ -16,6 +14,16 @@ public class Creature : MonoBehaviour
     public float brainTime = 2f;
     public int wanderState = 0;//0: stay near, 1: go far
     AIDestinationSetter goAi;
+    public Transform Target
+    {
+        get { return target; }
+        set
+        {
+            target = value;
+            goAi.target = target;
+        }
+    }
+    public Transform target;
     WanderingDestinationSetter wanderAI;
     RichAI ai;
 
@@ -23,8 +31,9 @@ public class Creature : MonoBehaviour
     float followTime = 5f;
 
     //testing!
-    RimColorInfo rci;
     TextMesh text;
+    float whenSpoke;
+    float howLongShowSpeak = 2f;
 
     //test jump
     float jumpForce = 5;
@@ -36,32 +45,28 @@ public class Creature : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        mind = GetComponent<CreatureMind>();
         goAi = GetComponent<AIDestinationSetter>();
         wanderAI = GetComponent<WanderingDestinationSetter>();
         ai = GetComponent<RichAI>();
-        lastHeardSounds = new List<Sound>();
         nextDecision = Random.Range(0, brainTime);
         //testing!
-        rci = GetComponent<RimColorInfo>();
         rb = GetComponent<Rigidbody>();
         jumpTimeOffset = Random.Range(0, 9);
         text = transform.GetChild(0).GetComponent<TextMesh>();
+        text.text = "";
         //test soundmaking
         sm = GetComponent<SoundMaker>();
-        //randomize size
-        float size = Random.Range(0.5f, 1.5f)*transform.localScale.x;
-        transform.localScale = new Vector3(size, size, size);
     }
 
     // Update is called once per frame
     void Update()
     {
-        //test soundmaking
-        if(Random.value < 0.01f)
+        //deal with showing speak
+        if(Time.time > whenSpoke + howLongShowSpeak)
         {
-            sm.MakeSound(0);
+            text.text = "";
         }
-        text.text = heardNotes;
         //deal with pathfinding
         if (Mathf.Round(Time.time * 60f) % 10 == jumpTimeOffset)//every 5 frames??
         {
@@ -100,45 +105,56 @@ public class Creature : MonoBehaviour
                     }
                     wanderAI.NewPoint(rmod);
                 }
-                rci.SetValue(wanderState);
                 break;
             case 1://going
-                rci.SetValue(2);
                 ai.maxSpeed = 2f;
                 wanderState = -1;
                 wanderAI.enabled = false;
                 goAi.enabled = true;
-                if(Time.time > whenJoined + followTime && Vector3.Distance(goAi.target.position,transform.position) > 5f)
+                /*if(Time.time > whenJoined + followTime && Vector3.Distance(goAi.target.position,transform.position) > 5f)
                 {
                     SetPathState(0);
+                }*/
+                if (goAi.ready && mind.action == "eat")
+                {
+                    mind.Eat();
+                    SetPathState(0);
+                    mind.Decide();
+                }
+                if(goAi.ready && mind.action == "shelter")
+                {
+                    //write a path state that lets them wander BUT keeps them within a certain range
+                }
+                if(goAi.ready && mind.action == "play")
+                {
+                    //write a path state for playing
                 }
                 break;
         }
-        //deal with sounds
-        if(lastHeardSounds.Count > 0)
-        {
-            //forget old notes!
-            if(Time.time > lastHeardSounds[0].timePlayed + 2f)
-            {
-                Debug.Log("Forgot "+lastHeardSounds[0].note);
-                lastHeardSounds.Remove(lastHeardSounds[0]);
-                heardNotes = heardNotes.Substring(1);
-            }
-            //interpret notes!!
-            if(pathState != 1 && heardNotes.Contains("wass"))
-            {
-                SetPathState(1);
-                whenJoined = Time.time;
-            }
-
-        }
         
     }
-    public void Hear(Sound sound)
+    public void Hear(Command cmd)//this is where the creature interprets the command!!
     {
-        lastHeardSounds.Add(sound);
-        heardNotes += sound.note;
-        Debug.Log(sound.note);
+        switch (cmd.verb)
+        {
+            case Verb.Move:
+                switch (cmd.noun)
+                {
+                    case Noun.Me:
+                        Target = cmd.speaker;
+                        SetPathState(1);
+                        break;
+                    case Noun.You:
+                        Target = transform;
+                        SetPathState(1);
+                        break;
+                }
+                break;
+            case Verb.Scatter://does it really matter who they say to stop following???
+                SetPathState(0);
+                Target = null;
+                break;
+        }
     }
     public void Die()
     {
@@ -159,5 +175,33 @@ public class Creature : MonoBehaviour
         {
             rb.AddForce(Vector3.up * (jumpForce*Random.Range(0.3f,0.5f)), ForceMode.Impulse);
         }
+    }
+    public void SetAction(string action, Transform target)
+    {
+        //rn going to make it so actions dont take over the pathstate tho
+        if(pathState == 0)
+        {
+            if (action == "eat")
+            {
+                SetPathState(1);
+                goAi.target = target;
+            }
+            if (action == "shelter")
+            {
+                SetPathState(1);
+                goAi.target = target;
+            }
+            if (action == "play")
+            {
+                SetPathState(1);
+                goAi.target = target;
+            }
+        }
+    }
+    public void Speak(string message)
+    {
+        Language.TakeMessage(message, sm);
+        text.text = message;
+        whenSpoke = Time.time;
     }
 }

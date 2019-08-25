@@ -7,13 +7,19 @@ public class SoundMaker : MonoBehaviour
 {
  // public sta SoundMaker me;
     public float noteLength;//how long does a creature remember a sound?
+    public float noteDistance = 5f;
     List<Creature> creatures;
+    AudioSource audio;
     //sound notes w,a,s,d
     List<char> notes = new List<char> { 'w', 'a', 's', 'd' };
+    void Awake()
+    {
+        audio = GetComponent<AudioSource>();
+    }
     List<Creature> DetectNearbyCreatures()
     {
         List<Creature> creatures = new List<Creature>();
-        Collider[] hitColliders = Physics.OverlapSphere(transform.position, 5f);
+        Collider[] hitColliders = Physics.OverlapSphere(transform.position, noteDistance);
         foreach(Collider c in hitColliders)
         {
             if(c.transform == transform)
@@ -27,18 +33,16 @@ public class SoundMaker : MonoBehaviour
         }
         return creatures;
     }
-    void AffectCreatures(char note)
+    void AffectCreatures(Command cmd)
     {
-        Sound sound = new Sound(note, Time.time,transform);
         foreach(Creature creature in creatures)
         {
-            creature.Hear(sound);
+            creature.Hear(cmd);
         }
     }
-    public void MakeSound(int i)
+    public void MakeSound(Command cmd)
     {
-        char whatNote = notes[i];
         creatures = DetectNearbyCreatures();
-        AffectCreatures(whatNote);
+        AffectCreatures(cmd);
     }
 }

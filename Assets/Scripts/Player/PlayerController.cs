@@ -11,10 +11,14 @@ public class PlayerController : MonoBehaviour
     public float walkSpeed;
     public float runSpeed;
     public float jumpSpeed;
-
+    public float talkSpeed = 0.1f; //multiplies run/walk speed while talking
+    public float slowSpeed = 0.5f; //multiplies time.timeScale
+    
     //testing data
     public float verticalPos;
     public float horizontalPos;
+    public bool isSpeaking;
+    private bool safeRelease; //true after comms exit lerping is complete
 
     //situation data
     public GameObject itemHeld;
@@ -27,12 +31,16 @@ public class PlayerController : MonoBehaviour
     Camera cam;
     Vector3 itemHeldOffset;
     Vector3 groundContactNormal = Vector3.up;//the slope of whatever you're standing on
+    LayerMask layerGround;
+
     // Start is called before the first frame update
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
         collider = GetComponent<CapsuleCollider>();
         cam = Camera.main;
+        layerGround = LayerMask.NameToLayer("Ground");
+        //Cursor.lockState = CursorLockMode.None;
     }
 
     // Update is called once per frame
@@ -55,14 +63,57 @@ public class PlayerController : MonoBehaviour
         //items
         if (Input.GetMouseButtonDown(0))
         {
-            CheckInteraction();
+            //CheckInteraction();
+            isSpeaking = true;
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.Confined;
+            StartCoroutine(Coroutines.DoOverEasedTime(0.1f, Easing.Linear, t =>
+            {
+                cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, 57, t);
+            }));
         }
-        if(itemHeld != null)
+        if (Input.GetMouseButtonUp(0))
         {
-            itemHeld.transform.position = transform.position + (transform.up*verticalPos + transform.right*horizontalPos + transform.forward).normalized;
+            //CheckInteraction();
+            isSpeaking = false;
+            StartCoroutine(Coroutines.DoOverEasedTime(0.1f, Easing.Linear, t =>
+            {
+                cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, 47, t);
+            }));
+            Cursor.visible = false;
+            Cursor.lockState = CursorLockMode.Locked;
+        }
+        if (Input.GetKeyDown(KeyCode.LeftShift) && !isSpeaking)
+        {
+            safeRelease = false;
+            StartCoroutine(Coroutines.DoOverEasedTime(0.1f, Easing.Linear, t =>
+            {
+                cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, 50, t);
+            }));
+        }
+        if (Input.GetKeyUp(KeyCode.LeftShift) && !isSpeaking)
+        {
+            StartCoroutine(Coroutines.DoOverEasedTime(0.1f, Easing.Linear, t =>
+            {
+                cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, 50, t);
+            }));
+        }
+        if (itemHeld != null)
+        {
+            itemHeld.transform.position = transform.position + (transform.up * verticalPos + transform.right * horizontalPos + transform.forward).normalized;
             itemHeld.transform.forward = transform.forward;
         }
         //end items
+
+        //time slow
+        if (isSpeaking)
+        {
+            Time.timeScale = slowSpeed;
+        }
+        else
+        {
+            Time.timeScale = 1f;
+        }
     }
     private void FixedUpdate()
     {
@@ -80,20 +131,35 @@ public class PlayerController : MonoBehaviour
         {
             if(hit.transform.tag == "Item")
             {
-                itemHeld = hit.transform.gameObject;
+                //itemHeld = hit.transform.gameObject;
             }
         }
     }
     void Move()
     {
+
         Vector3 yVel = new Vector3(0, rb.velocity.y, 0);
         if (running)
         {
-            rb.velocity = moveDirection * runSpeed * Time.deltaTime;
+            if (isSpeaking)
+            {
+                rb.velocity = moveDirection * runSpeed * talkSpeed * Time.deltaTime;
+            }
+            else if (!isSpeaking)
+            {
+                rb.velocity = moveDirection * runSpeed * Time.deltaTime;
+            }
         }
         else
         {
-            rb.velocity = moveDirection * walkSpeed * Time.deltaTime;
+            if (isSpeaking)
+            {
+                rb.velocity = moveDirection * walkSpeed * talkSpeed * Time.deltaTime;
+            }
+            else
+            {
+                rb.velocity = moveDirection * walkSpeed * Time.deltaTime;
+            }
         }
         rb.velocity += yVel;
     }
@@ -102,6 +168,7 @@ public class PlayerController : MonoBehaviour
         if (isGrounded())
         {
             rb.velocity += new Vector3(0, jumpSpeed * Time.deltaTime, 0);
+            Debug.Log("Jumping");
         }
     }
     bool CanMove(Vector3 direction)
@@ -119,9 +186,14 @@ public class PlayerController : MonoBehaviour
                 return false;
             }
         }
+        if (Input.GetMouseButton(0))
+        {
+            //return false;
+        }
+        
         return true;
     }
-    bool isGrounded()
+    public bool isGrounded()
     {
         float distanceToPoints = collider.height / 2 - collider.radius;
         Vector3 point1 = transform.position + collider.center + Vector3.up * distanceToPoints;
@@ -130,7 +202,7 @@ public class PlayerController : MonoBehaviour
         RaycastHit[] hits = Physics.CapsuleCastAll(point1, point2, collider.radius, transform.up*-1f, castDistance);
         foreach (RaycastHit hit in hits)
         {
-            if (hit.transform.tag == "Wall")
+            if (hit.transform.gameObject.layer == layerGround)
             {
                 groundContactNormal = hit.normal;
                 return true;
