@@ -16,6 +16,7 @@ public class PlayerSoundController : MonoBehaviour
         makingSound = Input.GetMouseButton(0);
         /*if (makingSound)
         {
+            Cursor.visible = true;
             if (Input.GetKeyDown(KeyCode.W))
             {
                 sm.MakeSound(0);

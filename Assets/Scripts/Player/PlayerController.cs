@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
@@ -19,6 +18,7 @@ public class PlayerController : MonoBehaviour
     public float verticalPos;
     public float horizontalPos;
     public bool isSpeaking;
+    private bool safeRelease; //true after comms exit lerping is complete
 
     //situation data
     public GameObject itemHeld;
@@ -40,6 +40,7 @@ public class PlayerController : MonoBehaviour
         collider = GetComponent<CapsuleCollider>();
         cam = Camera.main;
         layerGround = LayerMask.NameToLayer("Ground");
+        //Cursor.lockState = CursorLockMode.None;
     }
 
     // Update is called once per frame
@@ -64,7 +65,8 @@ public class PlayerController : MonoBehaviour
         {
             //CheckInteraction();
             isSpeaking = true;
-            
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.Confined;
             StartCoroutine(Coroutines.DoOverEasedTime(0.1f, Easing.Linear, t =>
             {
                 cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, 57, t);
@@ -78,11 +80,27 @@ public class PlayerController : MonoBehaviour
             {
                 cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, 47, t);
             }));
-
+            Cursor.visible = false;
+            Cursor.lockState = CursorLockMode.Locked;
+        }
+        if (Input.GetKeyDown(KeyCode.LeftShift) && !isSpeaking)
+        {
+            safeRelease = false;
+            StartCoroutine(Coroutines.DoOverEasedTime(0.1f, Easing.Linear, t =>
+            {
+                cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, 50, t);
+            }));
+        }
+        if (Input.GetKeyUp(KeyCode.LeftShift) && !isSpeaking)
+        {
+            StartCoroutine(Coroutines.DoOverEasedTime(0.1f, Easing.Linear, t =>
+            {
+                cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, 50, t);
+            }));
         }
         if (itemHeld != null)
         {
-            itemHeld.transform.position = transform.position + (transform.up*verticalPos + transform.right*horizontalPos + transform.forward).normalized;
+            itemHeld.transform.position = transform.position + (transform.up * verticalPos + transform.right * horizontalPos + transform.forward).normalized;
             itemHeld.transform.forward = transform.forward;
         }
         //end items
@@ -119,6 +137,7 @@ public class PlayerController : MonoBehaviour
     }
     void Move()
     {
+
         Vector3 yVel = new Vector3(0, rb.velocity.y, 0);
         if (running)
         {
@@ -126,7 +145,7 @@ public class PlayerController : MonoBehaviour
             {
                 rb.velocity = moveDirection * runSpeed * talkSpeed * Time.deltaTime;
             }
-            else
+            else if (!isSpeaking)
             {
                 rb.velocity = moveDirection * runSpeed * Time.deltaTime;
             }
@@ -149,6 +168,7 @@ public class PlayerController : MonoBehaviour
         if (isGrounded())
         {
             rb.velocity += new Vector3(0, jumpSpeed * Time.deltaTime, 0);
+            Debug.Log("Jumping");
         }
     }
     bool CanMove(Vector3 direction)

@@ -32,7 +32,7 @@ public class CommsUI : MonoBehaviour
     {
         if (Input.GetMouseButton(0))
         {
-           // keys.SetActive(true);
+            // keys.SetActive(true);
             if (Input.GetKeyDown(KeyCode.W))
             {
                 letter_w.color = Color.cyan;
@@ -85,15 +85,23 @@ public class CommsUI : MonoBehaviour
         {
             StartCoroutine(Coroutines.DoOverEasedTime(0.1f, Easing.Linear, t =>
             {
-                 group.alpha = Mathf.Lerp(1, 0, t);
+                group.alpha = Mathf.Lerp(1, 0, t);
             }));
             //keys.SetActive(false);
-            Language.TakeMessage(ticker.text,sm);
+            Language.TakeMessage(ticker.text, sm);
             ticker.text = null;
             letter_w.color = textColor;
             letter_a.color = textColor;
             letter_s.color = textColor;
             letter_d.color = textColor;
+        }
+    }
+    IEnumerator KillAlpha()
+    {
+        yield return new WaitForSeconds(.2f);
+        if (!Input.GetMouseButton(0))
+        {
+            group.alpha = 0;
         }
     }
 }
