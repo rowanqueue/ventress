@@ -8,7 +8,7 @@ public enum Verb
 }
 public enum Noun
 {
-    Default,Me,You,Name
+    Default,Me,You
 }
 public struct Command
 {
@@ -34,8 +34,7 @@ public static class Language
     static Dictionary<string, Noun> nouns = new Dictionary<string, Noun>()
     {
         {"a",Noun.Me },
-        {"s", Noun.You},
-        {"wasda", Noun.Name}
+        {"s", Noun.You}
     };
     public static void TakeMessage(string msg,SoundMaker talker)
     {
