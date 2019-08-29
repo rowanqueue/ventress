@@ -9,6 +9,10 @@ public class Dictionary : MonoBehaviour
     public Dictionary<Noun, string> dict_nouns = new Dictionary<Noun, string>();
     public GameObject entry;
     public Text entryText;
+    public Button verbsButton;
+    public Button nounsButton;
+    public Button adjButton;
+
     // Start is called before the first frame update
 
     void Start()
@@ -36,6 +40,9 @@ public class Dictionary : MonoBehaviour
         {
             entryText.text += kvp.ToString() + "\n";
         }
+
+        verbsButton.interactable = false;
+        nounsButton.interactable = true;
     }
     public void ShowNouns()
     {
@@ -45,5 +52,7 @@ public class Dictionary : MonoBehaviour
         {
             entryText.text += kvp.ToString() + "\n";
         }
+        verbsButton.interactable = true;
+        nounsButton.interactable = false;
     }
 }
