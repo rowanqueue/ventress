@@ -15,6 +15,8 @@ public class CommsUI : MonoBehaviour
     public Text ticker;
     public Color textColor;
     CanvasGroup group;
+    public KeyCode openComms;
+    public KeyCode interactComms;
 
     public SoundMaker sm;
 
@@ -24,13 +26,13 @@ public class CommsUI : MonoBehaviour
         ticker.text = null;
         textColor = new Color(254, 207, 255);
         group = gameObject.GetComponent<CanvasGroup>();
-        group.alpha = 0;
+        //group.alpha = 0;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetMouseButton(0))
+        if (Input.GetMouseButton(1))
         {
             // keys.SetActive(true);
             if (Input.GetKeyDown(KeyCode.W))
@@ -74,18 +76,18 @@ public class CommsUI : MonoBehaviour
                 ticker.text += " ";
             }
         }
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(1))
         {
-            StartCoroutine(Coroutines.DoOverEasedTime(0.1f, Easing.Linear, t =>
+            StartCoroutine(Coroutines.DoOverEasedTime(0.01f, Easing.Linear, t =>
             {
                 group.alpha = Mathf.Lerp(0, 1, t);
             }));
         }
-        else if (Input.GetMouseButtonUp(0))
+        else if (Input.GetMouseButtonUp(1))
         {
             StartCoroutine(Coroutines.DoOverEasedTime(0.1f, Easing.Linear, t =>
             {
-                group.alpha = Mathf.Lerp(1, 0, t);
+                group.alpha = Mathf.Lerp(1, -0.2f, t);
             }));
             //keys.SetActive(false);
             Language.TakeMessage(ticker.text, sm);
@@ -99,9 +101,10 @@ public class CommsUI : MonoBehaviour
     IEnumerator KillAlpha()
     {
         yield return new WaitForSeconds(.2f);
-        if (!Input.GetMouseButton(0))
+        if (!Input.GetMouseButton(1))
         {
             group.alpha = 0;
+
         }
     }
 }
