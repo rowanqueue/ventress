@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    public static PlayerController instance;
     //public states
     public bool running;
 
@@ -21,7 +22,8 @@ public class PlayerController : MonoBehaviour
     private bool safeRelease; //true after comms exit lerping is complete
 
     //situation data
-    public GameObject itemHeld;
+    [HideInInspector]
+    public ItemHandler ih;
 
 
     //private data
@@ -36,6 +38,8 @@ public class PlayerController : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
+        instance = this;
+        ih = gameObject.AddComponent<ItemHandler>();
         rb = GetComponent<Rigidbody>();
         collider = GetComponent<CapsuleCollider>();
         cam = Camera.main;
@@ -98,10 +102,20 @@ public class PlayerController : MonoBehaviour
                 cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, 50, t);
             }));
         }
-        if (itemHeld != null)
+        if (ih.holdingItem)
         {
-            itemHeld.transform.position = transform.position + (transform.up * verticalPos + transform.right * horizontalPos + transform.forward).normalized;
-            itemHeld.transform.forward = transform.forward;
+            ih.HoldItem();
+            if (Input.GetKeyDown(KeyCode.E))
+            {
+                ih.DropItem();
+            }
+        }
+        else
+        {
+            if (Input.GetKeyDown(KeyCode.E))
+            {
+                CheckInteraction();
+            }
         }
         //end items
 
@@ -131,7 +145,7 @@ public class PlayerController : MonoBehaviour
         {
             if(hit.transform.tag == "Item")
             {
-                //itemHeld = hit.transform.gameObject;
+                ih.PickUpItem(hit.transform.GetComponent<Item>());
             }
         }
     }
