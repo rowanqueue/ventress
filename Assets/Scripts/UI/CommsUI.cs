@@ -26,7 +26,7 @@ public class CommsUI : MonoBehaviour
         ticker.text = null;
         textColor = new Color(254, 207, 255);
         group = gameObject.GetComponent<CanvasGroup>();
-        //group.alpha = 0;
+        group.alpha = 0;
     }
 
     // Update is called once per frame

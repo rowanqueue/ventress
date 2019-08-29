@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Dictionary : MonoBehaviour
+public class HUDDict : MonoBehaviour
 {
     public Dictionary<Verb, string> dict_verbs = new Dictionary<Verb, string>();
     public Dictionary<Noun, string> dict_nouns = new Dictionary<Noun, string>();
@@ -22,6 +22,7 @@ public class Dictionary : MonoBehaviour
         dict_verbs.Add(Verb.Scatter, "ws");
         dict_nouns.Add(Noun.Me, "a");
         dict_nouns.Add(Noun.You, "s");
+        entryText.text = null;
         //ShowVerbs();
 
     }
@@ -36,10 +37,7 @@ public class Dictionary : MonoBehaviour
     {
         Debug.Log("ShowVerbs");
         entryText.text = null;
-        foreach (KeyValuePair<Verb, string> kvp in dict_verbs)
-        {
-            entryText.text += kvp.ToString() + "\n";
-        }
+        entryText.text = Language.ShowVerbs();
 
         verbsButton.interactable = false;
         nounsButton.interactable = true;
@@ -48,10 +46,7 @@ public class Dictionary : MonoBehaviour
     {
         Debug.Log("ShowNouns");
         entryText.text = null;
-        foreach (KeyValuePair<Noun, string> kvp in dict_nouns)
-        {
-            entryText.text += kvp.ToString() + "\n";
-        }
+        entryText.text = Language.ShowNouns();
         verbsButton.interactable = true;
         nounsButton.interactable = false;
     }

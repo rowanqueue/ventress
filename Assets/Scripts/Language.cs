@@ -8,7 +8,7 @@ public enum Verb
 }
 public enum Noun
 {
-    Default,Me,You
+    Default,Me,You,Name
 }
 public struct Command
 {
@@ -34,7 +34,8 @@ public static class Language
     static Dictionary<string, Noun> nouns = new Dictionary<string, Noun>()
     {
         {"a",Noun.Me },
-        {"s", Noun.You}
+        {"s", Noun.You},
+        {"wasda", Noun.Name}
     };
     public static void TakeMessage(string msg,SoundMaker talker)
     {
@@ -75,5 +76,23 @@ public static class Language
             }
         }
 
+    }
+    public static string ShowVerbs()
+    {
+        string outString = "";
+        foreach (KeyValuePair<string, Verb> kvp in verbs)
+        {
+            outString += kvp.Value + " - " + kvp.Key.ToString().ToUpper() + "\n";
+        }
+        return outString;
+    }
+    public static string ShowNouns()
+    {
+        string outString = "";
+        foreach (KeyValuePair<string, Noun> kvp in nouns)
+        {
+            outString += kvp.Value + " - " + kvp.Key.ToString().ToUpper() + "\n";
+        }
+        return outString;
     }
 }
