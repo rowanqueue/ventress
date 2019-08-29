@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 public enum ItemTrait
 {
-    Dull,Shiny
+    Default,Dull,Shiny
 }
 
 public class Item : MonoBehaviour

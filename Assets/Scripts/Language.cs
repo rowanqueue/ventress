@@ -15,13 +15,15 @@ public struct Command
     public Verb verb;
     public Noun noun;
     public Transform speaker;
+    public string custom;
     public Transform subject;
-    public Command(Transform sp, Verb v, Noun n, Transform subject = null)
+    public Command(Transform sp, Verb v = Verb.Default, Noun n=Noun.Default,string custom = "", Transform subject = null)
     {
         this.speaker = sp;
         this.verb = v;
         this.noun = n;
         this.subject = subject;
+        this.custom = custom;
     }
 }
 public static class Language
@@ -42,7 +44,7 @@ public static class Language
     };
     public static void TakeMessage(string msg,SoundMaker talker, Transform subject = null)
     {
-        Command cmd = new Command(talker.transform, Verb.Default,Noun.Default);
+        Command cmd = new Command(talker.transform);
         string[] message = msg.Split(' ');
         bool hasVerb = false;
         bool hasNoun = false;
@@ -64,6 +66,12 @@ public static class Language
                 cmd.noun = nouns[word];
                 continue;
             }
+            //this ain't a verb or a noun...
+            if(word.Length == 3 || word.Length == 5)
+            {
+                cmd.custom = word;
+                continue;
+            }
         }
         if (subject)
         {
@@ -77,8 +85,6 @@ public static class Language
         {
             if (hasVerb)
             {
-                //assume that the noun is me
-                cmd.noun = Noun.Me;
                 talker.MakeSound(cmd);
             }
         }

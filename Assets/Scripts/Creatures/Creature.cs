@@ -181,8 +181,10 @@ public class Creature : MonoBehaviour
                 }
                 break;
             case Verb.Get:
-                //don't know about nouns yet for this one chief
-                ih.CheckNearby(this);
+                if(cmd.custom != "")
+                {
+                    ih.CheckNearby(this,FindTraitOfName(cmd.custom));
+                }
                 break;
             case Verb.Put:
                 if (ih.holdingItem)
@@ -233,6 +235,17 @@ public class Creature : MonoBehaviour
             }
         }
         return n;
+    }
+    public ItemTrait FindTraitOfName(string name)
+    {
+        if(name == "aaa")
+        {
+            return ItemTrait.Shiny;
+        }
+        else
+        {
+            return ItemTrait.Dull;
+        }
     }
     public void Die()
     {

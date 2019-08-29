@@ -55,10 +55,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0e05b6b31b33374c9c375e1004f453c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mind: {fileID: 0}
   pathState: 0
   brainTime: 2
   wanderState: 0
   target: {fileID: 0}
+  itemToBePickedUp: {fileID: 0}
 --- !u!114 &80063589
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -71,6 +73,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bac37cce6db62dd42a55198240fd2dd2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  name: 
   age: 0
   bravery: 0.5
   weight: 0.5
@@ -104,7 +107,7 @@ MonoBehaviour:
   repathRate: 0.5
   canSearch: 1
   canMove: 1
-  maxSpeed: 1
+  maxSpeed: 3
   gravity: {x: NaN, y: NaN, z: NaN}
   groundMask:
     serializedVersion: 2

@@ -13,7 +13,7 @@ public class CreatureMind : MonoBehaviour
     {
         get { return size * currentBabyPercent; }//get the ACTUAL SIZE AT THIS MOMENT
     }
-    float size;//0.5-1.5, babies start at 0.25 of their adult size and grow
+    float size;//1.0-2.0, babies start at 0.5 of their adult size and grow
     public float age;//0 is baby, 1 is adult, 3 is dead
 
     public float bravery;//these numbers are multiplied by 0.5 to generate whatever threshold
@@ -57,7 +57,7 @@ public class CreatureMind : MonoBehaviour
         creature = GetComponent<Creature>();
         //stats
         age = CustomRange(0f, 2f);
-        size = CustomRange(0.5f, 1.5f);
+        size = CustomRange(1f, 2f);
         //needs
         safety = CustomRange(0f, 1f);
         hunger = CustomRange(0f, 1f);
@@ -67,7 +67,7 @@ public class CreatureMind : MonoBehaviour
         emotion = Random.Range(0, 4);
 
         transformScale = transform.localScale.x;
-        float sizeEffect = Mathf.Lerp(0.25f * size, size, age) * transformScale;
+        float sizeEffect = Mathf.Lerp(0.5f * size, size, age) * transformScale;
         transform.localScale = new Vector3(sizeEffect, sizeEffect, sizeEffect);
     }
     float CustomRange(float min, float max)
@@ -110,7 +110,7 @@ public class CreatureMind : MonoBehaviour
         //if they're a baby, set their size
         if(age < 1f)
         {
-            float sizeEffect = Mathf.Lerp(0.25f * size, size, age)*transformScale;
+            float sizeEffect = Mathf.Lerp(0.5f * size, size, age)*transformScale;
             transform.localScale = new Vector3(sizeEffect, sizeEffect, sizeEffect);
         }
         //safety

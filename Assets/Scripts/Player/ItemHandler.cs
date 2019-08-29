@@ -84,7 +84,7 @@ public class ItemHandler : MonoBehaviour
         holdingItem = false;
         reciever.PickUpItem(itemHeld);
     }
-    public void CheckNearby(Creature creature)//for puffballs to pick stuff up
+    public void CheckNearby(Creature creature,ItemTrait trait = ItemTrait.Default)//for puffballs to pick stuff up
     {
         List<Item> items = new List<Item>();
         Collider[] hitColliders = Physics.OverlapSphere(transform.position, 4f);//LAYER MASK LATER
@@ -97,9 +97,24 @@ public class ItemHandler : MonoBehaviour
             if (c.CompareTag("Item"))
             {
                 Item item = c.GetComponent<Item>();
-                if (!item.held && creature.mind.likes.Contains(item.trait))
+                if (!item.held)
                 {
-                    items.Add(item);
+                    if(trait == ItemTrait.Default)
+                    {
+                        if (creature.mind.likes.Contains(item.trait))
+                        {
+                            items.Add(item);
+                        }
+                    }
+                    else
+                    {
+                        if (item.trait == trait)
+                        {
+                            items.Clear();
+                            items.Add(item);
+                            break;
+                        }
+                    }
                 }
             }
         }
