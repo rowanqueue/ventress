@@ -7,6 +7,7 @@ using UnityEngine;
 public class CreatureMind : MonoBehaviour
 {
     Creature creature;
+    public string name;
     //stats
     public float Size
     {
@@ -50,6 +51,7 @@ public class CreatureMind : MonoBehaviour
 
     //datta about world
     float transformScale;
+    public List<ItemTrait> likes;
     void Start()
     {
         creature = GetComponent<Creature>();

@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    public static PlayerController instance;
     //public states
     public bool running;
 
@@ -22,7 +23,8 @@ public class PlayerController : MonoBehaviour
 	private bool lookEnabled;
 
     //situation data
-    public GameObject itemHeld;
+    [HideInInspector]
+    public ItemHandler ih;
 
 
     //private data
@@ -38,6 +40,8 @@ public class PlayerController : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
+        instance = this;
+        ih = gameObject.AddComponent<ItemHandler>();
         rb = GetComponent<Rigidbody>();
         collider = GetComponent<CapsuleCollider>();
         cam = Camera.main;
@@ -71,7 +75,7 @@ public class PlayerController : MonoBehaviour
 			mouseLook.enabled = false;
 			lookEnabled = false;
 		}
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(1))
         {
             if (lookEnabled == false)
 			{
@@ -86,7 +90,7 @@ public class PlayerController : MonoBehaviour
                 cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, 57, t);
             }));
         }
-        if (Input.GetMouseButtonUp(0))
+        if (Input.GetMouseButtonUp(1))
         {
             //CheckInteraction();
             isSpeaking = false;
@@ -112,10 +116,20 @@ public class PlayerController : MonoBehaviour
                 cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, 50, t);
             }));
         }
-        if (itemHeld != null)
+        if (ih.holdingItem)
         {
-            itemHeld.transform.position = transform.position + (transform.up * verticalPos + transform.right * horizontalPos + transform.forward).normalized;
-            itemHeld.transform.forward = transform.forward;
+            ih.HoldItem();
+            if (Input.GetKeyDown(KeyCode.E))
+            {
+                ih.DropItem();
+            }
+        }
+        else
+        {
+            if (Input.GetKeyDown(KeyCode.E))
+            {
+                CheckInteraction();
+            }
         }
         //end items
 
@@ -145,7 +159,7 @@ public class PlayerController : MonoBehaviour
         {
             if(hit.transform.tag == "Item")
             {
-                //itemHeld = hit.transform.gameObject;
+                ih.PickUpItem(hit.transform.GetComponent<Item>());
             }
         }
     }
@@ -182,7 +196,6 @@ public class PlayerController : MonoBehaviour
         if (isGrounded())
         {
             rb.velocity += new Vector3(0, jumpSpeed * Time.deltaTime, 0);
-            Debug.Log("Jumping");
         }
     }
     bool CanMove(Vector3 direction)
@@ -200,7 +213,7 @@ public class PlayerController : MonoBehaviour
                 return false;
             }
         }
-        if (Input.GetMouseButton(0))
+        if (Input.GetMouseButton(1))
         {
             //return false;
         }
@@ -224,5 +237,13 @@ public class PlayerController : MonoBehaviour
         }
         groundContactNormal = Vector3.up;
         return false;
+    }
+    IEnumerator MouseUpContingency()
+    {
+        yield return new WaitForSeconds(.2f);
+        if (!Input.GetMouseButton(1))
+        {
+            cam.fieldOfView = 47;
+        }
     }
 }

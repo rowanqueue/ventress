@@ -1,11 +1,16 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+public enum ItemTrait
+{
+    Dull,Shiny
+}
 
 public class Item : MonoBehaviour
 {
     public bool held;
     public bool thrown;//some items are activated when thrown
+    public ItemTrait trait;
     [HideInInspector]
     public Rigidbody rb;
     [HideInInspector]
