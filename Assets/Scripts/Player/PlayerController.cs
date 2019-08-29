@@ -71,7 +71,7 @@ public class PlayerController : MonoBehaviour
 			mouseLook.enabled = false;
 			lookEnabled = false;
 		}
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(1))
         {
             if (lookEnabled == false)
 			{
@@ -86,7 +86,7 @@ public class PlayerController : MonoBehaviour
                 cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, 57, t);
             }));
         }
-        if (Input.GetMouseButtonUp(0))
+        if (Input.GetMouseButtonUp(1))
         {
             //CheckInteraction();
             isSpeaking = false;
@@ -182,7 +182,6 @@ public class PlayerController : MonoBehaviour
         if (isGrounded())
         {
             rb.velocity += new Vector3(0, jumpSpeed * Time.deltaTime, 0);
-            Debug.Log("Jumping");
         }
     }
     bool CanMove(Vector3 direction)
@@ -200,7 +199,7 @@ public class PlayerController : MonoBehaviour
                 return false;
             }
         }
-        if (Input.GetMouseButton(0))
+        if (Input.GetMouseButton(1))
         {
             //return false;
         }
@@ -224,5 +223,13 @@ public class PlayerController : MonoBehaviour
         }
         groundContactNormal = Vector3.up;
         return false;
+    }
+    IEnumerator MouseUpContingency()
+    {
+        yield return new WaitForSeconds(.2f);
+        if (!Input.GetMouseButton(1))
+        {
+            cam.fieldOfView = 47;
+        }
     }
 }
