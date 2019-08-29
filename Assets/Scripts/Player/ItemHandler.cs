@@ -1,22 +1,18 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class ItemHandler : MonoBehaviour
 {
-    //global data
-    static public ItemHandler me;
     //situational data
     public bool holdingItem;
     public float grabRange;
-    Item itemHeld;
+    public Item itemHeld;
     float whenDropped;//so you don't pick up the same thing instantly after
 
     //testing data
     public float upHelp;
 
     //private data
-    Camera cam;
     Vector3 itemHeldOffset;
 
     //private values
@@ -26,14 +22,12 @@ public class ItemHandler : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
-        me = this;
-        cam = Camera.main;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(holdingItem)
+       /* if(holdingItem)
         {
             if (Input.GetMouseButton(1) || Input.GetKey(KeyCode.Q))
             {
@@ -58,7 +52,7 @@ public class ItemHandler : MonoBehaviour
                 /*if (Input.GetMouseButtonDown(0))//drop
                 {
                     DropItem();
-                }*/
+                }
             }
         }
         else
@@ -71,7 +65,7 @@ public class ItemHandler : MonoBehaviour
             {
                 CheckInteraction();
             }
-        }
+        }*/
     }
     public void DropItem()
     {
@@ -79,23 +73,51 @@ public class ItemHandler : MonoBehaviour
         whenDropped = Time.time;
         holdingItem = false;
     }
-    void CheckInteraction()
-    {
-        float distance = grabRange;
-        RaycastHit[] hits = Physics.RaycastAll(cam.transform.position, cam.transform.forward, distance);
-        foreach(RaycastHit hit in hits)
-        {
-            if (hit.transform.tag == "Item")
-            {
-                PickUpItem(hit.transform.GetComponent<Item>());
-                break;
-            }
-        }
-    }
     public void PickUpItem(Item item)
     {
         itemHeld = item;
         item.PickUp();
         holdingItem = true;
+    }
+    public void GiveItem(ItemHandler reciever)
+    {
+        holdingItem = false;
+        reciever.PickUpItem(itemHeld);
+    }
+    public void CheckNearby(Creature creature)//for puffballs to pick stuff up
+    {
+        List<Item> items = new List<Item>();
+        Collider[] hitColliders = Physics.OverlapSphere(transform.position, 4f);//LAYER MASK LATER
+        foreach (Collider c in hitColliders)
+        {
+            if (c.transform == transform)
+            {
+                continue;
+            }
+            if (c.CompareTag("Item"))
+            {
+                Item item = c.GetComponent<Item>();
+                if (!item.held && creature.mind.likes.Contains(item.trait))
+                {
+                    items.Add(item);
+                }
+            }
+        }
+        //for now just pick up the first one
+        if(items.Count > 0)
+        {
+            creature.itemToBePickedUp = items[0];
+            creature.Target = creature.itemToBePickedUp.transform;
+            creature.SetPathState(1);
+        }
+    }
+    public void HoldItem(bool holdAbove = false)//physically keep the item on your person
+    {
+        itemHeld.transform.position = transform.position + (transform.up * vPos + transform.right * hPos + transform.forward).normalized;
+        if (holdAbove)
+        {
+            itemHeld.transform.position = transform.position + (Vector3.up * vPos);
+        }
+        itemHeld.transform.forward = transform.forward;
     }
 }

@@ -6,7 +6,8 @@ using Pathfinding;
 //what the creature does!!
 public class Creature : MonoBehaviour
 {
-    CreatureMind mind;
+    [HideInInspector]
+    public CreatureMind mind;
 
     //handle pathfinding
     public int pathState = 0;//0: wander, 1: go
@@ -42,6 +43,9 @@ public class Creature : MonoBehaviour
 
     //test soundmaking
     SoundMaker sm;
+    ItemHandler ih;
+    [HideInInspector]
+    public Item itemToBePickedUp;
     // Start is called before the first frame update
     void Start()
     {
@@ -57,6 +61,7 @@ public class Creature : MonoBehaviour
         text.text = "";
         //test soundmaking
         sm = GetComponent<SoundMaker>();
+        ih = gameObject.AddComponent<ItemHandler>();
     }
 
     // Update is called once per frame
@@ -66,6 +71,10 @@ public class Creature : MonoBehaviour
         if(Time.time > whenSpoke + howLongShowSpeak)
         {
             text.text = "";
+        }
+        if(ih.holdingItem)
+        {
+            ih.HoldItem(true);
         }
         //deal with pathfinding
         if (Mathf.Round(Time.time * 60f) % 10 == jumpTimeOffset)//every 5 frames??
@@ -129,6 +138,11 @@ public class Creature : MonoBehaviour
                 {
                     //write a path state for playing
                 }
+                if(itemToBePickedUp && Vector3.Distance(transform.position,Target.position) < 1f)
+                {
+                    ih.PickUpItem(itemToBePickedUp);
+                    itemToBePickedUp = null;
+                }
                 break;
         }
         
@@ -151,8 +165,38 @@ public class Creature : MonoBehaviour
                 }
                 break;
             case Verb.Scatter://does it really matter who they say to stop following???
-                SetPathState(0);
-                Target = null;
+                switch (cmd.noun)
+                {
+                    case Noun.Me:
+                        if(Target == cmd.speaker)
+                        {
+                            SetPathState(0);
+                            Target = null;
+                        }
+                        break;
+                    default:
+                        SetPathState(0);
+                        Target = null;
+                        break;
+                }
+                break;
+            case Verb.Get:
+                //don't know about nouns yet for this one chief
+                ih.CheckNearby(this);
+                break;
+            case Verb.Put:
+                if (ih.holdingItem)
+                {
+                    switch (cmd.noun)
+                    {
+                        case Noun.Me:
+                            ih.GiveItem(PlayerController.instance.ih);
+                            break;
+                        default:
+                            ih.DropItem();
+                            break;
+                    }
+                }
                 break;
         }
     }

@@ -85,6 +85,7 @@ MonoBehaviour:
   isChief: 0
   action: 
   currentBabyPercent: 0
+  likes: 01000000
 --- !u!114 &6204996714148460348
 MonoBehaviour:
   m_ObjectHideFlags: 0

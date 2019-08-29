@@ -4,7 +4,7 @@ using UnityEngine;
 
 public enum Verb
 {
-    Default,Move,Scatter
+    Default,Move,Scatter,Get,Put
 }
 public enum Noun
 {
@@ -27,7 +27,9 @@ public static class Language
     static Dictionary<string, Verb> verbs = new Dictionary<string, Verb>()
     {
         {"wa",Verb.Move },
-        {"ws",Verb.Scatter }
+        {"ws",Verb.Scatter },
+        {"da",Verb.Get},
+        {"ds",Verb.Put }
     };
     static Dictionary<string, Noun> nouns = new Dictionary<string, Noun>()
     {

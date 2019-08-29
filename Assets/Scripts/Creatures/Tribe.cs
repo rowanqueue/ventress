@@ -5,6 +5,7 @@ using UnityEngine;
 public class Tribe : MonoBehaviour
 {
     public List<CreatureMind> members;
+    public List<string> names;
     public Transform shelter;
     public CreatureMind chief;
 
@@ -21,13 +22,33 @@ public class Tribe : MonoBehaviour
                 members.Add(child.GetComponent<CreatureMind>());
             }
         }
+        names = new List<string>();
         foreach(CreatureMind member in members)
         {
             member.tribe = this;
+            //tribe is going to name the creatures
+            member.name = RandomName(names);
+            names.Add(member.name);
         }
         FindChief();
     }
-
+    string RandomName(List<string> names)//generate a name that isn't in the list
+    {
+        List<char> letters = new List<char> { 'w', 'a', 's', 'd' };
+        string name = "";
+        for(int i = 0; i < 5; i++)
+        {
+            name += letters[Random.Range(0, 4)];
+        }
+        if (!names.Contains(name))
+        {
+            return name;
+        }
+        else
+        {
+            return RandomName(names);
+        }
+    }
     // Update is called once per frame
     void Update()
     {
