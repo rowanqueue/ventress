@@ -198,7 +198,41 @@ public class Creature : MonoBehaviour
                     }
                 }
                 break;
+            case Verb.What:
+                switch (cmd.noun)
+                {
+                    case Noun.Me:
+                        Speak("wasda");
+                        break;
+                    case Noun.You:
+                        Speak(mind.name);
+                        break;
+                    default:
+                        if (cmd.subject)
+                        {
+                            Speak(FindNameOfItem(cmd.subject));
+                        }
+                        break;
+                }
+                break;
         }
+    }
+    public string FindNameOfItem(Transform subject)
+    {
+        string n = "";
+        if (subject.CompareTag("Item"))
+        {
+            Item item = subject.GetComponent<Item>();
+            if(item.trait == ItemTrait.Shiny)
+            {
+                n = "aaa";
+            }
+            else
+            {
+                n = "sss";
+            }
+        }
+        return n;
     }
     public void Die()
     {

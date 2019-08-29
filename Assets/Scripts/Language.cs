@@ -4,22 +4,24 @@ using UnityEngine;
 
 public enum Verb
 {
-    Default,Move,Scatter,Get,Put
+    Default,Move,Scatter,Get,Put,What
 }
 public enum Noun
 {
-    Default,Me,You
+    Default,Me,You,This
 }
 public struct Command
 {
     public Verb verb;
     public Noun noun;
     public Transform speaker;
-    public Command(Transform sp, Verb v, Noun n)
+    public Transform subject;
+    public Command(Transform sp, Verb v, Noun n, Transform subject = null)
     {
         this.speaker = sp;
         this.verb = v;
         this.noun = n;
+        this.subject = subject;
     }
 }
 public static class Language
@@ -29,14 +31,16 @@ public static class Language
         {"wa",Verb.Move },
         {"ws",Verb.Scatter },
         {"da",Verb.Get},
-        {"ds",Verb.Put }
+        {"ds",Verb.Put },
+        {"wd", Verb.What }
     };
     static Dictionary<string, Noun> nouns = new Dictionary<string, Noun>()
     {
         {"a",Noun.Me },
-        {"s", Noun.You}
+        {"s", Noun.You},
+        {"w",Noun.This}
     };
-    public static void TakeMessage(string msg,SoundMaker talker)
+    public static void TakeMessage(string msg,SoundMaker talker, Transform subject = null)
     {
         Command cmd = new Command(talker.transform, Verb.Default,Noun.Default);
         string[] message = msg.Split(' ');
@@ -60,6 +64,10 @@ public static class Language
                 cmd.noun = nouns[word];
                 continue;
             }
+        }
+        if (subject)
+        {
+            cmd.subject = subject;
         }
         if(hasVerb && hasNoun)//congrats you have a whole command!
         {

@@ -90,7 +90,14 @@ public class CommsUI : MonoBehaviour
                 group.alpha = Mathf.Lerp(1, -0.2f, t);
             }));
             //keys.SetActive(false);
-            Language.TakeMessage(ticker.text, sm);
+            if (PlayerController.instance.ih.holdingItem)
+            {
+                Language.TakeMessage(ticker.text, sm, PlayerController.instance.ih.itemHeld.transform);
+            }
+            else
+            {
+                Language.TakeMessage(ticker.text, sm);
+            }
             ticker.text = null;
             letter_w.color = textColor;
             letter_a.color = textColor;
