@@ -84,4 +84,22 @@ public static class Language
         }
 
     }
+    public static string ShowVerbs()
+    {
+        string outString = "";
+        foreach (KeyValuePair<string, Verb> kvp in verbs)
+        {
+            outString += kvp.Value + " - " + kvp.Key.ToString().ToUpper() + "\n";
+        }
+        return outString;
+    }
+    public static string ShowNouns()
+    {
+        string outString = "";
+        foreach (KeyValuePair<string, Noun> kvp in nouns)
+        {
+            outString += kvp.Value + " - " + kvp.Key.ToString().ToUpper() + "\n";
+        }
+        return outString;
+    }
 }
