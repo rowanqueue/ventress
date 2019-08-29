@@ -75,6 +75,11 @@ public class PlayerController : MonoBehaviour
 			mouseLook.enabled = false;
 			lookEnabled = false;
 		}
+        if (lookEnabled == false && (Input.GetMouseButtonDown(1) || (!Input.GetMouseButton(1) && Input.GetMouseButtonDown(0))))
+        {
+            Cursor.visible = false; //hides mouse cursor
+            Cursor.lockState = CursorLockMode.Locked; //locks mouse in center of screen
+        }
         if (Input.GetMouseButtonDown(1))
         {
             if (lookEnabled == false)
@@ -116,6 +121,7 @@ public class PlayerController : MonoBehaviour
                 cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, 50, t);
             }));
         }
+
         if (ih.holdingItem)
         {
             ih.HoldItem();
