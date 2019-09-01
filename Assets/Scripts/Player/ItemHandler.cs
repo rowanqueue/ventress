@@ -84,10 +84,10 @@ public class ItemHandler : MonoBehaviour
         holdingItem = false;
         reciever.PickUpItem(itemHeld);
     }
-    public void CheckNearby(Creature creature,ItemTrait trait = ItemTrait.Default)//for puffballs to pick stuff up
+    public Item CheckNearby(Creature creature,ItemTrait trait = ItemTrait.Default)//for puffballs to pick stuff up
     {
         List<Item> items = new List<Item>();
-        Collider[] hitColliders = Physics.OverlapSphere(transform.position, 4f);//LAYER MASK LATER
+        Collider[] hitColliders = Physics.OverlapSphere(transform.position, 8f);//LAYER MASK LATER
         foreach (Collider c in hitColliders)
         {
             if (c.transform == transform)
@@ -121,9 +121,11 @@ public class ItemHandler : MonoBehaviour
         //for now just pick up the first one
         if(items.Count > 0)
         {
-            creature.itemToBePickedUp = items[0];
-            creature.Target = creature.itemToBePickedUp.transform;
-            creature.SetPathState(1);
+            return items[0];
+        }
+        else
+        {
+            return null;
         }
     }
     public void HoldItem(bool holdAbove = false)//physically keep the item on your person

@@ -24,6 +24,7 @@ public class Creature : MonoBehaviour
             goAi.target = target;
         }
     }
+    bool followingCreature;
     public Transform target;
     WanderingDestinationSetter wanderAI;
     RichAI ai;
@@ -124,6 +125,13 @@ public class Creature : MonoBehaviour
                 {
                     SetPathState(0);
                 }*/
+                if(followingCreature == false)
+                {
+                    if(Vector3.Distance(transform.position,Target.position) < 2f)
+                    {
+                        SetPathState(0);
+                    }
+                }
                 if (goAi.ready && mind.action == "eat")
                 {
                     mind.Eat();
@@ -138,10 +146,20 @@ public class Creature : MonoBehaviour
                 {
                     //write a path state for playing
                 }
-                if(itemToBePickedUp && Vector3.Distance(transform.position,Target.position) < 1f)
+                if(itemToBePickedUp)
                 {
-                    ih.PickUpItem(itemToBePickedUp);
-                    itemToBePickedUp = null;
+                    if (itemToBePickedUp.held)
+                    {
+                        itemToBePickedUp = null;
+                        SetPathState(0);
+                        break;
+                    }
+                    if(Vector3.Distance(transform.position, Target.position) < 1f)
+                    {
+                        ih.PickUpItem(itemToBePickedUp);
+                        itemToBePickedUp = null;
+                        SetPathState(0);
+                    }
                 }
                 break;
         }
@@ -157,10 +175,24 @@ public class Creature : MonoBehaviour
                     case Noun.Me:
                         Target = cmd.speaker;
                         SetPathState(1);
+                        followingCreature = true;
                         break;
                     case Noun.You:
                         Target = transform;
                         SetPathState(1);
+                        followingCreature = true;
+                        break;
+                    default:
+                        if (cmd.custom != "")
+                        {
+                            Item item = ih.CheckNearby(this, FindTraitOfName(cmd.custom));
+                            if (item)
+                            {
+                                Target = item.transform;
+                                SetPathState(1);
+                                followingCreature = false;
+                            }
+                        }
                         break;
                 }
                 break;
@@ -183,7 +215,13 @@ public class Creature : MonoBehaviour
             case Verb.Get:
                 if(cmd.custom != "")
                 {
-                    ih.CheckNearby(this,FindTraitOfName(cmd.custom));
+                    Item item = ih.CheckNearby(this,FindTraitOfName(cmd.custom));
+                    if (item)
+                    {
+                        itemToBePickedUp = item;
+                        Target = item.transform;
+                        SetPathState(1);
+                    }
                 }
                 break;
             case Verb.Put:
@@ -254,6 +292,10 @@ public class Creature : MonoBehaviour
     public void SetPathState(int i)
     {
         pathState = i;
+        if (pathState == 0)
+        {
+            Target = null;
+        }
     }
     public void Jump()
     {

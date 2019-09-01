@@ -5,12 +5,13 @@ using UnityEngine.Events;
 
 //this item will start a trigger if it notices an item inside
 [RequireComponent(typeof(Collider))]
-public class ItemTrigger : MonoBehaviour
+public class TagTrigger : MonoBehaviour
 {
     public UnityEvent myEvent;
+    public string tag;
     private void OnTriggerEnter(Collider other)
     {
-        if (other.tag.Equals("Item"))
+        if (other.tag.Equals(tag))
         {
             myEvent.Invoke();
         }
