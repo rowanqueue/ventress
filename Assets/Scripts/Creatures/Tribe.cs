@@ -32,6 +32,18 @@ public class Tribe : MonoBehaviour
         }
         FindChief();
     }
+    private void Start()
+    {
+        //give them some friends
+        foreach (CreatureMind member in members)
+        {
+            if (member != chief)
+            {
+                Debug.Log(chief.creature.sm);
+                member.creature.friends.Add(chief.creature.sm);
+            }
+        }
+    }
     string RandomName(List<string> names)//generate a name that isn't in the list
     {
         List<char> letters = new List<char> { 'w', 'a', 's', 'd' };

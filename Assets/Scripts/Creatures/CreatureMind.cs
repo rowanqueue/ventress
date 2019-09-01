@@ -6,7 +6,7 @@ using UnityEngine;
 //what the creature thinks!!
 public class CreatureMind : MonoBehaviour
 {
-    Creature creature;
+    public Creature creature;
     public string name;
     //stats
     public float Size

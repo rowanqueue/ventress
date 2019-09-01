@@ -14,6 +14,7 @@ public class Creature : MonoBehaviour
     float nextDecision;
     public float brainTime = 2f;
     public int wanderState = 0;//0: stay near, 1: go far
+    public float maxSpeed;
     AIDestinationSetter goAi;
     public Transform Target
     {
@@ -24,7 +25,6 @@ public class Creature : MonoBehaviour
             goAi.target = target;
         }
     }
-    bool followingCreature;
     public Transform target;
     WanderingDestinationSetter wanderAI;
     RichAI ai;
@@ -43,17 +43,21 @@ public class Creature : MonoBehaviour
     int jumpTimeOffset;
 
     //test soundmaking
-    SoundMaker sm;
+    public SoundMaker sm;
     ItemHandler ih;
     [HideInInspector]
     public Item itemToBePickedUp;
+    public bool simon;
+    public int simonlevel;
+    public List<SoundMaker> friends;
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         mind = GetComponent<CreatureMind>();
         goAi = GetComponent<AIDestinationSetter>();
         wanderAI = GetComponent<WanderingDestinationSetter>();
         ai = GetComponent<RichAI>();
+        maxSpeed = ai.maxSpeed;
         nextDecision = Random.Range(0, brainTime);
         //testing!
         rb = GetComponent<Rigidbody>();
@@ -105,19 +109,19 @@ public class Creature : MonoBehaviour
                     float rmod = 0;
                     if(wanderState == 0)//go near
                     {
-                        ai.maxSpeed = 0.5f;
+                        ai.maxSpeed = 0.5f*maxSpeed;
                         rmod = Random.Range(-0.2f, 0.3f);
                         rmod = Mathf.Clamp(rmod,0f, 0.3f);
                     }else if(wanderState == 1)//go far
                     {
-                        ai.maxSpeed = 2f;
+                        ai.maxSpeed = 1f*maxSpeed;
                         rmod = Random.Range(0.75f, 1.25f);
                     }
                     wanderAI.NewPoint(rmod);
                 }
                 break;
             case 1://going
-                ai.maxSpeed = 2f;
+                ai.maxSpeed = 1f * maxSpeed;
                 wanderState = -1;
                 wanderAI.enabled = false;
                 goAi.enabled = true;
@@ -125,13 +129,6 @@ public class Creature : MonoBehaviour
                 {
                     SetPathState(0);
                 }*/
-                if(followingCreature == false)
-                {
-                    if(Vector3.Distance(transform.position,Target.position) < 2f)
-                    {
-                        SetPathState(0);
-                    }
-                }
                 if (goAi.ready && mind.action == "eat")
                 {
                     mind.Eat();
@@ -154,7 +151,7 @@ public class Creature : MonoBehaviour
                         SetPathState(0);
                         break;
                     }
-                    if(Vector3.Distance(transform.position, Target.position) < 1f)
+                    if(Vector3.Distance(transform.position, Target.position) < 2.5f)
                     {
                         ih.PickUpItem(itemToBePickedUp);
                         itemToBePickedUp = null;
@@ -169,18 +166,41 @@ public class Creature : MonoBehaviour
     {
         switch (cmd.verb)
         {
+            case Verb.Default://wow you're playing simon says!!
+                if (simon)
+                {
+                    string sofar = mind.name.Substring(0, simonlevel);
+                    if (cmd.custom == sofar)
+                    {
+                        simonlevel += 1;
+                        if (simonlevel > 5)
+                        {
+                            simon = false;
+                            cmd.speaker.simonSayer = false;
+                            simonlevel = 0;
+                            Debug.Log("FRIENDS");
+                            friends.Add(cmd.speaker);
+                        }
+                        else
+                        {
+                            Speak(mind.name.Substring(0, simonlevel));
+                        }
+                    }
+                    else
+                    {
+                        Speak(mind.name.Substring(0, simonlevel));
+                    }
+                }
+                break;
             case Verb.Move:
                 switch (cmd.noun)
                 {
                     case Noun.Me:
-                        Target = cmd.speaker;
-                        SetPathState(1);
-                        followingCreature = true;
-                        break;
-                    case Noun.You:
-                        Target = transform;
-                        SetPathState(1);
-                        followingCreature = true;
+                        if (friends.Contains(cmd.speaker))
+                        {
+                            Target = cmd.speaker.transform;
+                            SetPathState(1);
+                        }
                         break;
                     default:
                         if (cmd.custom != "")
@@ -190,7 +210,6 @@ public class Creature : MonoBehaviour
                             {
                                 Target = item.transform;
                                 SetPathState(1);
-                                followingCreature = false;
                             }
                         }
                         break;
@@ -200,15 +219,13 @@ public class Creature : MonoBehaviour
                 switch (cmd.noun)
                 {
                     case Noun.Me:
-                        if(Target == cmd.speaker)
+                        if(Target == cmd.speaker.transform)
                         {
                             SetPathState(0);
-                            Target = null;
                         }
                         break;
                     default:
                         SetPathState(0);
-                        Target = null;
                         break;
                 }
                 break;
@@ -245,12 +262,39 @@ public class Creature : MonoBehaviour
                         Speak("wasda");
                         break;
                     case Noun.You:
-                        Speak(mind.name);
+                        Speak("das");
                         break;
                     default:
                         if (cmd.subject)
                         {
                             Speak(FindNameOfItem(cmd.subject));
+                        }
+                        break;
+                }
+                break;
+            case Verb.Sing:
+                switch (cmd.noun)
+                {
+                    case Noun.You:
+                        if (!friends.Contains(cmd.speaker))
+                        {
+                            simon = true;
+                            simonlevel = 1;
+                            cmd.speaker.simonSayer = true;
+                            Speak(mind.name.Substring(0, simonlevel));
+                        }
+                        else
+                        {
+                            Speak(mind.name);
+                        }
+                        break;
+                    default:
+                        if(cmd.custom != "")
+                        {
+                            if(cmd.custom == "ass")
+                            {
+                                Speak(mind.tribe.chief.name);
+                            }
                         }
                         break;
                 }
@@ -292,7 +336,7 @@ public class Creature : MonoBehaviour
     public void SetPathState(int i)
     {
         pathState = i;
-        if (pathState == 0)
+        if (i == 0)
         {
             Target = null;
         }

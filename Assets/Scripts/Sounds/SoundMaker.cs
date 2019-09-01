@@ -8,6 +8,7 @@ public class SoundMaker : MonoBehaviour
  // public sta SoundMaker me;
     public float noteLength;//how long does a creature remember a sound?
     public float noteDistance = 5f;
+    public bool simonSayer;
     List<Creature> creatures;
     AudioSource audio;
     //sound notes w,a,s,d
@@ -38,6 +39,10 @@ public class SoundMaker : MonoBehaviour
         foreach(Creature creature in creatures)
         {
             creature.Hear(cmd);
+            if(cmd.verb == Verb.Sing && cmd.noun == Noun.You)//REMEMBER THIS RN ONLY ONE CAN HEAR YOU SING AT A TIME
+            {
+                break;
+            }
         }
     }
     public void MakeSound(Command cmd)

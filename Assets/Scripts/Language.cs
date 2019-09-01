@@ -4,7 +4,7 @@ using UnityEngine;
 
 public enum Verb
 {
-    Default,Move,Scatter,Get,Put,What
+    Default,Move,Scatter,Get,Put,What,Sing
 }
 public enum Noun
 {
@@ -14,10 +14,10 @@ public struct Command
 {
     public Verb verb;
     public Noun noun;
-    public Transform speaker;
+    public SoundMaker speaker;
     public string custom;
     public Transform subject;
-    public Command(Transform sp, Verb v = Verb.Default, Noun n=Noun.Default,string custom = "", Transform subject = null)
+    public Command(SoundMaker sp, Verb v = Verb.Default, Noun n=Noun.Default,string custom = "", Transform subject = null)
     {
         this.speaker = sp;
         this.verb = v;
@@ -34,7 +34,8 @@ public static class Language
         {"ws",Verb.Scatter },
         {"da",Verb.Get},
         {"ds",Verb.Put },
-        {"wd", Verb.What }
+        {"wd", Verb.What },
+        {"aa", Verb.Sing }
     };
     static Dictionary<string, Noun> nouns = new Dictionary<string, Noun>()
     {
@@ -44,13 +45,19 @@ public static class Language
     };
     public static void TakeMessage(string msg,SoundMaker talker, Transform subject = null)
     {
-        Command cmd = new Command(talker.transform);
+        Command cmd = new Command(talker);
         string[] message = msg.Split(' ');
         bool hasVerb = false;
         bool hasNoun = false;
         foreach(string word in message)
         {
-            if(hasVerb && hasNoun)
+            //this ain't a verb or a noun...
+            if (word.Length == 3 || word.Length == 5 || talker.simonSayer)
+            {
+                cmd.custom = word;
+                continue;
+            }
+            if (hasVerb && hasNoun)
             {
                 break;
             }
@@ -66,12 +73,6 @@ public static class Language
                 cmd.noun = nouns[word];
                 continue;
             }
-            //this ain't a verb or a noun...
-            if(word.Length == 3 || word.Length == 5)
-            {
-                cmd.custom = word;
-                continue;
-            }
         }
         if (subject)
         {
@@ -84,6 +85,10 @@ public static class Language
         else//uh oh not a whole command
         {
             if (hasVerb)
+            {
+                talker.MakeSound(cmd);
+            }
+            if (talker.simonSayer)//you're playing simon says
             {
                 talker.MakeSound(cmd);
             }
