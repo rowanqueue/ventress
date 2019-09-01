@@ -45,11 +45,13 @@ public class Creature : MonoBehaviour
     //test soundmaking
     public SoundMaker sm;
     ItemHandler ih;
+    public Health health;
     [HideInInspector]
     public Item itemToBePickedUp;
     public bool simon;
     public int simonlevel;
     public List<SoundMaker> friends;
+    public List<Transform> rivals;
     // Start is called before the first frame update
     void Awake()
     {
@@ -67,17 +69,18 @@ public class Creature : MonoBehaviour
         //test soundmaking
         sm = GetComponent<SoundMaker>();
         ih = gameObject.AddComponent<ItemHandler>();
+        health = gameObject.AddComponent<Health>();
     }
 
     // Update is called once per frame
     void Update()
     {
         //deal with showing speak
-        if(Time.time > whenSpoke + howLongShowSpeak)
+        if (Time.time > whenSpoke + howLongShowSpeak)
         {
             text.text = "";
         }
-        if(ih.holdingItem)
+        if (ih.holdingItem)
         {
             ih.HoldItem(true);
         }
@@ -107,14 +110,14 @@ public class Creature : MonoBehaviour
                 if ((wanderAI.ready || nextDecision + brainTime <= Time.time) && wanderState != -1)//ready to move!!
                 {
                     float rmod = 0;
-                    if(wanderState == 0)//go near
+                    if (wanderState == 0)//go near
                     {
-                        ai.maxSpeed = 0.5f*maxSpeed;
+                        ai.maxSpeed = 0.5f * maxSpeed;
                         rmod = Random.Range(-0.2f, 0.3f);
-                        rmod = Mathf.Clamp(rmod,0f, 0.3f);
-                    }else if(wanderState == 1)//go far
+                        rmod = Mathf.Clamp(rmod, 0f, 0.3f);
+                    } else if (wanderState == 1)//go far
                     {
-                        ai.maxSpeed = 1f*maxSpeed;
+                        ai.maxSpeed = 1f * maxSpeed;
                         rmod = Random.Range(0.75f, 1.25f);
                     }
                     wanderAI.NewPoint(rmod);
@@ -135,15 +138,33 @@ public class Creature : MonoBehaviour
                     SetPathState(0);
                     mind.Decide();
                 }
-                if(goAi.ready && mind.action == "shelter")
+                if (goAi.ready && mind.action == "shelter")
                 {
                     //write a path state that lets them wander BUT keeps them within a certain range
+                    if(mind.shelter > 0.95f)
+                    {
+                        SetPathState(0);
+                        mind.Decide();
+                    }
                 }
-                if(goAi.ready && mind.action == "play")
+                if (goAi.ready && mind.action == "play")
                 {
                     //write a path state for playing
+                    mind.play = 1;
+                    SetPathState(0);
+                    mind.Decide();
                 }
-                if(itemToBePickedUp)
+                if(mind.action == "attack")
+                {
+                    if(Vector3.Distance(transform.position,Target.position) < 2.5f)
+                    {
+                        //attack them
+                        Target.GetComponent<Health>().Hurt();
+                        SetPathState(0);
+                        mind.Decide();
+                    }
+                }
+                if (itemToBePickedUp)
                 {
                     if (itemToBePickedUp.held)
                     {
@@ -151,7 +172,7 @@ public class Creature : MonoBehaviour
                         SetPathState(0);
                         break;
                     }
-                    if(Vector3.Distance(transform.position, Target.position) < 2.5f)
+                    if (Vector3.Distance(transform.position, Target.position) < 2.5f)
                     {
                         ih.PickUpItem(itemToBePickedUp);
                         itemToBePickedUp = null;
@@ -160,7 +181,7 @@ public class Creature : MonoBehaviour
                 }
                 break;
         }
-        
+
     }
     public void Hear(Command cmd)//this is where the creature interprets the command!!
     {
@@ -219,7 +240,7 @@ public class Creature : MonoBehaviour
                 switch (cmd.noun)
                 {
                     case Noun.Me:
-                        if(Target == cmd.speaker.transform)
+                        if (Target == cmd.speaker.transform)
                         {
                             SetPathState(0);
                         }
@@ -230,9 +251,9 @@ public class Creature : MonoBehaviour
                 }
                 break;
             case Verb.Get:
-                if(cmd.custom != "")
+                if (cmd.custom != "")
                 {
-                    Item item = ih.CheckNearby(this,FindTraitOfName(cmd.custom));
+                    Item item = ih.CheckNearby(this, FindTraitOfName(cmd.custom));
                     if (item)
                     {
                         itemToBePickedUp = item;
@@ -280,7 +301,7 @@ public class Creature : MonoBehaviour
                         {
                             simon = true;
                             simonlevel = 1;
-                            cmd.speaker.simonSayer = true;
+                            cmd.speaker.SetSimon(this);
                             Speak(mind.name.Substring(0, simonlevel));
                         }
                         else
@@ -289,9 +310,9 @@ public class Creature : MonoBehaviour
                         }
                         break;
                     default:
-                        if(cmd.custom != "")
+                        if (cmd.custom != "")
                         {
-                            if(cmd.custom == "ass")
+                            if (cmd.custom == "ass")
                             {
                                 Speak(mind.tribe.chief.name);
                             }
@@ -304,10 +325,10 @@ public class Creature : MonoBehaviour
     public string FindNameOfItem(Transform subject)
     {
         string n = "";
-        if (subject.CompareTag("Item"))
+        if (subject.CompareTag("Food"))
         {
             Item item = subject.GetComponent<Item>();
-            if(item.trait == ItemTrait.Shiny)
+            if (item.trait == ItemTrait.Shiny)
             {
                 n = "aaa";
             }
@@ -320,7 +341,7 @@ public class Creature : MonoBehaviour
     }
     public ItemTrait FindTraitOfName(string name)
     {
-        if(name == "aaa")
+        if (name == "aaa")
         {
             return ItemTrait.Shiny;
         }
@@ -350,28 +371,33 @@ public class Creature : MonoBehaviour
         }
         if (isGrounded)
         {
-            rb.AddForce(Vector3.up * (jumpForce*Random.Range(0.3f,0.5f)), ForceMode.Impulse);
+            rb.AddForce(Vector3.up * (jumpForce * Random.Range(0.3f, 0.5f)), ForceMode.Impulse);
         }
     }
     public void SetAction(string action, Transform target)
     {
         //rn going to make it so actions dont take over the pathstate tho
-        if(pathState == 0)
+        if (pathState == 0 || pathState == 1)
         {
             if (action == "eat")
             {
                 SetPathState(1);
-                goAi.target = target;
+                Target = target;
             }
             if (action == "shelter")
             {
                 SetPathState(1);
-                goAi.target = target;
+                Target = target;
             }
             if (action == "play")
             {
                 SetPathState(1);
-                goAi.target = target;
+                Target = target;
+            }
+            if(action == "attack")
+            {
+                SetPathState(1);
+                Target = target;
             }
         }
     }

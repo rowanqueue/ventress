@@ -11,7 +11,7 @@ public class CreatureMind : MonoBehaviour
     //stats
     public float Size
     {
-        get { return size * currentBabyPercent; }//get the ACTUAL SIZE AT THIS MOMENT
+        get { return Mathf.Lerp(0.5f * size, size, age); }//get the ACTUAL SIZE AT THIS MOMENT
     }
     float size;//1.0-2.0, babies start at 0.5 of their adult size and grow
     public float age;//0 is baby, 1 is adult, 3 is dead
@@ -136,6 +136,7 @@ public class CreatureMind : MonoBehaviour
         if (isMyShelterNearby(4f))
         {
             shelter += 0.10f;
+            shelter = Mathf.Clamp(shelter, 0f, 1f);
         }
         else
         {
@@ -186,6 +187,13 @@ public class CreatureMind : MonoBehaviour
     public void Decide()//based on current situation, what do
     {
         action = "";
+        Transform isRival = isRivalNearby(5f);
+        if (isRival != transform)
+        {
+            action = "attack";
+            creature.SetAction(action, isRival);
+            return;
+        }
         //needs
         /*if(safety < 0.5f*bravery)//maybe make this threshold based on something??
         {
@@ -214,13 +222,10 @@ public class CreatureMind : MonoBehaviour
         }
         if(shelter < 0.5f*social)
         {
-            if (isMyShelterNearby(10f))
-            {
-                action = "shelter";
-                creature.SetAction(action, tribe.shelter);
-                return;
-            }
-            else if (shelter < 0.1f)//they're more desperate for shelter
+            action = "shelter";
+            creature.SetAction(action, tribe.shelter);
+            return;
+            if (shelter < 0.1f)//they're more desperate for shelter
             {
                 //bool isAShelterNearby = Random.value < 0.5f;//maybe go to a different shelter
                 //action = "Go to a different shelter";
@@ -244,7 +249,7 @@ public class CreatureMind : MonoBehaviour
     }
     Transform DetectNearbyTag(string tag)//just returns one, not
     {
-        Collider[] hitColliders = Physics.OverlapSphere(transform.position, 10f);
+        Collider[] hitColliders = Physics.OverlapSphere(transform.position, 15f);
         foreach (Collider c in hitColliders)
         {
             if (c.transform == transform)
@@ -270,5 +275,21 @@ public class CreatureMind : MonoBehaviour
             isIt = true;
         }
         return isIt;
+    }
+    Transform isRivalNearby(float distance)
+    {
+        Collider[] hitColliders = Physics.OverlapSphere(transform.position, 15f);
+        foreach (Collider c in hitColliders)
+        {
+            if (c.transform == transform)
+            {
+                continue;
+            }
+            if (creature.rivals.Contains(c.transform))
+            {
+                return c.transform;
+            }
+        }
+        return transform;
     }
 }

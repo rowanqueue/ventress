@@ -45,6 +45,21 @@ public static class Language
     };
     public static void TakeMessage(string msg,SoundMaker talker, Transform subject = null)
     {
+        //deal with simon
+        if (talker.simonSayer)
+        {
+            if(Time.time > talker.timeWhenSimonDies)
+            {
+                talker.simonSayer = false;
+                talker.simonSayee.simon = false;
+                talker.simonSayee = null;
+            }
+            else
+            {
+                talker.timeWhenSimonDies = Time.time + talker.simonTimeCheck;
+            }
+        }
+        //end
         Command cmd = new Command(talker);
         string[] message = msg.Split(' ');
         bool hasVerb = false;
@@ -77,6 +92,7 @@ public static class Language
         if (subject)
         {
             cmd.subject = subject;
+            Debug.Log("su");
         }
         if(hasVerb && hasNoun)//congrats you have a whole command!
         {
@@ -87,8 +103,7 @@ public static class Language
             if (hasVerb)
             {
                 talker.MakeSound(cmd);
-            }
-            if (talker.simonSayer)//you're playing simon says
+            }else if (talker.simonSayer)//you're playing simon says
             {
                 talker.MakeSound(cmd);
             }

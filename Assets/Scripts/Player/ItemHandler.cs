@@ -94,7 +94,7 @@ public class ItemHandler : MonoBehaviour
             {
                 continue;
             }
-            if (c.CompareTag("Item"))
+            if (c.CompareTag("Item") || c.CompareTag("Food"))
             {
                 Item item = c.GetComponent<Item>();
                 if (!item.held)

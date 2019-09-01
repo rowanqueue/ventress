@@ -25,7 +25,7 @@ public class PlayerController : MonoBehaviour
     //situation data
     [HideInInspector]
     public ItemHandler ih;
-
+    public Health health;
 
     //private data
     Rigidbody rb;
@@ -42,6 +42,7 @@ public class PlayerController : MonoBehaviour
     {
         instance = this;
         ih = gameObject.AddComponent<ItemHandler>();
+        health = gameObject.AddComponent<Health>();
         rb = GetComponent<Rigidbody>();
         collider = GetComponent<CapsuleCollider>();
         cam = Camera.main;
@@ -163,7 +164,7 @@ public class PlayerController : MonoBehaviour
         RaycastHit hit;
         if(Physics.Raycast(cam.transform.position,cam.transform.forward,out hit, distance))
         {
-            if(hit.transform.tag == "Item")
+            if(hit.transform.CompareTag("Item") || hit.transform.CompareTag("Food"))
             {
                 ih.PickUpItem(hit.transform.GetComponent<Item>());
             }
@@ -251,5 +252,9 @@ public class PlayerController : MonoBehaviour
         {
             cam.fieldOfView = 47;
         }
+    }
+    public void Hurt()
+    {
+        Debug.Log("ow");
     }
 }
