@@ -20,6 +20,7 @@ GameObject:
   - component: {fileID: 1955094926}
   - component: {fileID: 9064100634220834448}
   - component: {fileID: 2125164917}
+  - component: {fileID: 8521751124425699060}
   m_Layer: 0
   m_Name: Puffball
   m_TagString: Creature
@@ -55,10 +56,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0e05b6b31b33374c9c375e1004f453c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mind: {fileID: 0}
   pathState: 0
   brainTime: 2
   wanderState: 0
   target: {fileID: 0}
+  itemToBePickedUp: {fileID: 0}
 --- !u!114 &80063589
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -71,6 +74,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bac37cce6db62dd42a55198240fd2dd2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  name: 
   age: 0
   bravery: 0.5
   weight: 0.5
@@ -326,6 +330,18 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &8521751124425699060
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 929851115894994715}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e925e3d55e2144488504d9f4b7226cf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2369782221569620558
 GameObject:
   m_ObjectHideFlags: 0

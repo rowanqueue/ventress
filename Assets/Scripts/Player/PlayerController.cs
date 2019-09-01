@@ -14,11 +14,15 @@ public class PlayerController : MonoBehaviour
     public float jumpSpeed;
     public float talkSpeed = 0.1f; //multiplies run/walk speed while talking
     public float slowSpeed = 0.5f; //multiplies time.timeScale
-    
+    float fov_default = 47;
+    float fov_comms = 57;
+    float fov_focus = 42;
+
     //testing data
     public float verticalPos;
     public float horizontalPos;
     public bool isSpeaking;
+    bool isFocusing;
     private bool safeRelease; //true after comms exit lerping is complete
 	private bool lookEnabled;
 
@@ -92,20 +96,55 @@ public class PlayerController : MonoBehaviour
             Cursor.lockState = CursorLockMode.Confined;
             StartCoroutine(Coroutines.DoOverEasedTime(0.1f, Easing.Linear, t =>
             {
-                cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, 57, t);
+                cam.fieldOfView = Mathf.Lerp(fov_default, fov_comms, t);
             }));
         }
         if (Input.GetMouseButtonUp(1))
         {
             //CheckInteraction();
             isSpeaking = false;
-            StartCoroutine(Coroutines.DoOverEasedTime(0.1f, Easing.Linear, t =>
+            if (!isFocusing)
             {
-                cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, 47, t);
-            }));
+                StartCoroutine(Coroutines.DoOverEasedTime(0.1f, Easing.Linear, t =>
+                {
+                    cam.fieldOfView = Mathf.Lerp(fov_comms, fov_default, t);
+                }));
+            }
+            if (isFocusing)
+            {
+                StartCoroutine(Coroutines.DoOverEasedTime(0.1f, Easing.Linear, t =>
+                {
+                    cam.fieldOfView = Mathf.Lerp(fov_comms, fov_focus, t);
+                }));
+            }
             Cursor.visible = false;
             Cursor.lockState = CursorLockMode.Locked;
         }
+        //focus code begin
+        if (Input.GetMouseButtonDown(0))
+        {
+            isFocusing = true;
+            if (!isSpeaking)
+            {
+                StartCoroutine(Coroutines.DoOverEasedTime(0.1f, Easing.Linear, t =>
+                {
+                    cam.fieldOfView = Mathf.Lerp(fov_default, fov_focus, t);
+                }));
+            }
+        }
+        if (Input.GetMouseButtonUp(0))
+        {
+            isFocusing = false;
+            if (!isSpeaking)
+            {
+                StartCoroutine(Coroutines.DoOverEasedTime(0.1f, Easing.Linear, t =>
+                {
+                    cam.fieldOfView = Mathf.Lerp(fov_focus, fov_default, t);
+                }));
+            }
+        }
+        //focus code end
+
         if (Input.GetKeyDown(KeyCode.LeftShift) && !isSpeaking)
         {
             safeRelease = false;
@@ -249,7 +288,7 @@ public class PlayerController : MonoBehaviour
         yield return new WaitForSeconds(.2f);
         if (!Input.GetMouseButton(1))
         {
-            cam.fieldOfView = 47;
+            cam.fieldOfView = fov_default;
         }
     }
 }

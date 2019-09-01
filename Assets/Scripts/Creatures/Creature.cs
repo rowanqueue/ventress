@@ -46,6 +46,8 @@ public class Creature : MonoBehaviour
     ItemHandler ih;
     [HideInInspector]
     public Item itemToBePickedUp;
+    public ChatLog chatLog;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -62,6 +64,7 @@ public class Creature : MonoBehaviour
         //test soundmaking
         sm = GetComponent<SoundMaker>();
         ih = gameObject.AddComponent<ItemHandler>();
+        chatLog = ChatLog.instance;
     }
 
     // Update is called once per frame
@@ -245,7 +248,8 @@ public class Creature : MonoBehaviour
     public void Speak(string message)
     {
         Language.TakeMessage(message, sm);
-        text.text = message;
+        text.text += message;
         whenSpoke = Time.time;
+        chatLog.TakeMessage(mind.name + ": " + message + "\n");
     }
 }
