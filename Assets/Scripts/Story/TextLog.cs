@@ -16,6 +16,7 @@ public class TextLog : MonoBehaviour
     // Creates a new Story object with the compiled story which we can then play!
     void StartStory()
     {
+        TextLogObj.SetActive(true);
         story = new Story(inkJSONAsset.text);
         RefreshView();
     }
@@ -26,7 +27,7 @@ public class TextLog : MonoBehaviour
     void RefreshView()
     {
         // Remove all the UI on screen
-        RemoveChildren();
+        //RemoveChildren();
 
         // Read all the content until we can't continue any more
         while (story.canContinue)
@@ -42,22 +43,38 @@ public class TextLog : MonoBehaviour
         // Display all the choices, if there are any!
         if (story.currentChoices.Count > 0)
         {
-            for (int i = 0; i < story.currentChoices.Count; i++)
+            if (story.currentChoices.Count == 1)
             {
-                Choice choice = story.currentChoices[i];
-                Button button = CreateChoiceView(choice.text.Trim());
+                Choice choice = story.currentChoices[0];
+                Button button = CreateChoiceView(choice.text.Trim(), 1);
                 // Tell the button what to do when we press it
                 button.onClick.AddListener(delegate {
                     OnClickChoiceButton(choice);
                 });
             }
+            else if (story.currentChoices.Count == 2)
+            {
+                for (int i = 0; i < story.currentChoices.Count; i++)
+                {
+                    Choice choice = story.currentChoices[i];
+                    Button button = CreateChoiceView(choice.text.Trim(), 2);
+                    // Tell the button what to do when we press it
+                    button.onClick.AddListener(delegate {
+                        OnClickChoiceButton(choice);
+                    });
+                }
+            }
+            
         }
         // If we've read all the content and there's no choices, the story is finished!
         else
         {
-            Button choice = CreateChoiceView("End of story.\nRestart?");
-            choice.onClick.AddListener(delegate {
-                StartStory();
+            ButtonTwo.SetActive(false);
+            ButtonOne.gameObject.SetActive(true);
+            Button button = CreateChoiceView("Exit", 1);
+            // Tell the button what to do when we press it
+            button.onClick.AddListener(delegate {
+                TextLogObj.SetActive(false);
             });
         }
     }
@@ -72,27 +89,50 @@ public class TextLog : MonoBehaviour
     // Creates a button showing the choice text
     void CreateContentView(string text)
     {
-        TextMeshPro storyText = Instantiate(textPrefab) as TextMeshPro;
-        storyText.text = text;
-        storyText.transform.SetParent(viewport, false);
+        LogText.text = text;
+        LogText.transform.SetParent(viewport, false);
     }
 
     // Creates a button showing the choice text
-    Button CreateChoiceView(string text)
+    Button CreateChoiceView(string text, int choices)
     {
-        // Creates the button from a prefab
-        Button choice = Instantiate(buttonPrefab) as Button;
-        choice.transform.SetParent(canvas.transform, false);
+        if (choices == 1)
+        {
+            ButtonTwo.SetActive(false);
+            ButtonOne.gameObject.SetActive(true);
+            // Gets the text from the button prefab
+            Button choice = ButtonOne.GetComponentInChildren<Button>();
 
-        // Gets the text from the button prefab
-        Text choiceText = choice.GetComponentInChildren<Text>();
-        choiceText.text = text;
+            // Make the button expand to fit the text
+           // HorizontalLayoutGroup layoutGroup = ButtonOne.GetComponent<HorizontalLayoutGroup>();
+            //layoutGroup.childForceExpandHeight = false;
 
-        // Make the button expand to fit the text
-        HorizontalLayoutGroup layoutGroup = choice.GetComponent<HorizontalLayoutGroup>();
-        layoutGroup.childForceExpandHeight = false;
+            return ButtonOne;
+        }
+        else if (choices == 2)
+        {
+            ButtonOne.gameObject.SetActive(false);
+            ButtonTwo.SetActive(true);
 
-        return choice;
+            Button[] choice = ButtonTwo.GetComponentsInChildren<Button>();
+            Debug.Log(choice[0] + " " + choice[1]);
+            // Gets the text from the button prefab
+            for (int i = 0; i < 2; i++)
+            {
+                Transform buttonChild = choice[i].gameObject.transform.GetChild(0);
+                TextMeshProUGUI choiceText = buttonChild.GetComponent<TextMeshProUGUI>();
+
+                choiceText.text = text;
+
+                // Make the button expand to fit the text
+                //HorizontalLayoutGroup layoutGroup = choice[i].GetComponent<HorizontalLayoutGroup>();
+                //layoutGroup.childForceExpandHeight = false;
+
+                return choice[i];
+            }
+        }
+
+        return null;
     }
 
     // Destroys all the children of this gameobject (all the UI)
@@ -116,7 +156,11 @@ public class TextLog : MonoBehaviour
 
     // UI Prefabs
     [SerializeField]
-    private TextMeshPro textPrefab;
+    private TextMeshProUGUI LogText;
     [SerializeField]
-    private Button buttonPrefab;
+    private Button ButtonOne;
+    [SerializeField]
+    private GameObject ButtonTwo;
+    [SerializeField]
+    private GameObject TextLogObj;
 }
