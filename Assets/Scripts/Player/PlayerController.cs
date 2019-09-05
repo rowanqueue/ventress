@@ -14,18 +14,22 @@ public class PlayerController : MonoBehaviour
     public float jumpSpeed;
     public float talkSpeed = 0.1f; //multiplies run/walk speed while talking
     public float slowSpeed = 0.5f; //multiplies time.timeScale
-    
+    float fov_default = 47;
+    float fov_comms = 57;
+    float fov_focus = 42;
+
     //testing data
     public float verticalPos;
     public float horizontalPos;
     public bool isSpeaking;
+    bool isFocusing;
     private bool safeRelease; //true after comms exit lerping is complete
-	private bool lookEnabled;
+    private bool lookEnabled;
 
     //situation data
     [HideInInspector]
     public ItemHandler ih;
-    public Health health;
+
 
     //private data
     Rigidbody rb;
@@ -42,12 +46,11 @@ public class PlayerController : MonoBehaviour
     {
         instance = this;
         ih = gameObject.AddComponent<ItemHandler>();
-        health = gameObject.AddComponent<Health>();
         rb = GetComponent<Rigidbody>();
         collider = GetComponent<CapsuleCollider>();
         cam = Camera.main;
         layerGround = LayerMask.NameToLayer("Ground");
-        //Cursor.lockState = CursorLockMode.None;
+        Cursor.lockState = CursorLockMode.Locked;
         mouseLook = cam.gameObject.GetComponent<MouseLook>();
     }
 
@@ -72,10 +75,10 @@ public class PlayerController : MonoBehaviour
 
         //disables mouselook when esc is pressed
         if (Input.GetKeyDown(KeyCode.Escape))
-		{
-			mouseLook.enabled = false;
-			lookEnabled = false;
-		}
+        {
+            mouseLook.enabled = false;
+            lookEnabled = false;
+        }
         if (lookEnabled == false && (Input.GetMouseButtonDown(1) || (!Input.GetMouseButton(1) && Input.GetMouseButtonDown(0))))
         {
             Cursor.visible = false; //hides mouse cursor
@@ -84,29 +87,64 @@ public class PlayerController : MonoBehaviour
         if (Input.GetMouseButtonDown(1))
         {
             if (lookEnabled == false)
-			{
-				mouseLook.enabled = true;
-			}
-			//CheckInteraction();
-			isSpeaking = true;
+            {
+                mouseLook.enabled = true;
+            }
+            //CheckInteraction();
+            isSpeaking = true;
             Cursor.visible = true;
             Cursor.lockState = CursorLockMode.Confined;
             StartCoroutine(Coroutines.DoOverEasedTime(0.1f, Easing.Linear, t =>
             {
-                cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, 57, t);
+                cam.fieldOfView = Mathf.Lerp(fov_default, fov_comms, t);
             }));
         }
         if (Input.GetMouseButtonUp(1))
         {
             //CheckInteraction();
             isSpeaking = false;
-            StartCoroutine(Coroutines.DoOverEasedTime(0.1f, Easing.Linear, t =>
+            if (!isFocusing)
             {
-                cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, 47, t);
-            }));
+                StartCoroutine(Coroutines.DoOverEasedTime(0.1f, Easing.Linear, t =>
+                {
+                    cam.fieldOfView = Mathf.Lerp(fov_comms, fov_default, t);
+                }));
+            }
+            if (isFocusing)
+            {
+                StartCoroutine(Coroutines.DoOverEasedTime(0.1f, Easing.Linear, t =>
+                {
+                    cam.fieldOfView = Mathf.Lerp(fov_comms, fov_focus, t);
+                }));
+            }
             Cursor.visible = false;
             Cursor.lockState = CursorLockMode.Locked;
         }
+        //focus code begin
+        if (Input.GetMouseButtonDown(0))
+        {
+            isFocusing = true;
+            if (!isSpeaking)
+            {
+                StartCoroutine(Coroutines.DoOverEasedTime(0.1f, Easing.Linear, t =>
+                {
+                    cam.fieldOfView = Mathf.Lerp(fov_default, fov_focus, t);
+                }));
+            }
+        }
+        if (Input.GetMouseButtonUp(0))
+        {
+            isFocusing = false;
+            if (!isSpeaking)
+            {
+                StartCoroutine(Coroutines.DoOverEasedTime(0.1f, Easing.Linear, t =>
+                {
+                    cam.fieldOfView = Mathf.Lerp(fov_focus, fov_default, t);
+                }));
+            }
+        }
+        //focus code end
+
         if (Input.GetKeyDown(KeyCode.LeftShift) && !isSpeaking)
         {
             safeRelease = false;
@@ -162,9 +200,9 @@ public class PlayerController : MonoBehaviour
     {
         float distance = 4f;
         RaycastHit hit;
-        if(Physics.Raycast(cam.transform.position,cam.transform.forward,out hit, distance))
+        if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, distance))
         {
-            if(hit.transform.CompareTag("Item") || hit.transform.CompareTag("Food"))
+            if (hit.transform.tag == "Item")
             {
                 ih.PickUpItem(hit.transform.GetComponent<Item>());
             }
@@ -224,7 +262,7 @@ public class PlayerController : MonoBehaviour
         {
             //return false;
         }
-        
+
         return true;
     }
     public bool isGrounded()
@@ -233,7 +271,7 @@ public class PlayerController : MonoBehaviour
         Vector3 point1 = transform.position + collider.center + Vector3.up * distanceToPoints;
         Vector3 point2 = transform.position + collider.center - Vector3.up * distanceToPoints;
         float castDistance = 0.1f;
-        RaycastHit[] hits = Physics.CapsuleCastAll(point1, point2, collider.radius, transform.up*-1f, castDistance);
+        RaycastHit[] hits = Physics.CapsuleCastAll(point1, point2, collider.radius, transform.up * -1f, castDistance);
         foreach (RaycastHit hit in hits)
         {
             if (hit.transform.gameObject.layer == layerGround)
@@ -250,11 +288,7 @@ public class PlayerController : MonoBehaviour
         yield return new WaitForSeconds(.2f);
         if (!Input.GetMouseButton(1))
         {
-            cam.fieldOfView = 47;
+            cam.fieldOfView = fov_default;
         }
-    }
-    public void Hurt()
-    {
-        Debug.Log("ow");
     }
 }
