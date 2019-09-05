@@ -114,6 +114,14 @@ public class CreatureMind : MonoBehaviour
             transform.localScale = new Vector3(sizeEffect, sizeEffect, sizeEffect);
         }
         //safety
+        if(isRivalNearby(2f) != transform)
+        {
+            safety -= 0.1f;
+        }
+        else
+        {
+            safety += 0.1f;
+        }
         //if unsafe, safety goes down
         //if safe, goes up
         //if below certain number, increase bravery
@@ -136,7 +144,6 @@ public class CreatureMind : MonoBehaviour
         if (isMyShelterNearby(4f))
         {
             shelter += 0.10f;
-            shelter = Mathf.Clamp(shelter, 0f, 1f);
         }
         else
         {
@@ -179,6 +186,11 @@ public class CreatureMind : MonoBehaviour
         hunger = CustomRound(hunger);
         shelter = CustomRound(shelter);
         play = CustomRound(play);
+
+        safety = Mathf.Clamp(safety, 0f, 1f);
+        hunger = Mathf.Clamp(hunger, 0f, 1f);
+        shelter = Mathf.Clamp(shelter, 0f, 1f);
+        play = Mathf.Clamp(play, 0f, 1f);
     }
     public void Eat()
     {
@@ -187,12 +199,15 @@ public class CreatureMind : MonoBehaviour
     public void Decide()//based on current situation, what do
     {
         action = "";
-        Transform isRival = isRivalNearby(5f);
-        if (isRival != transform)
+        if(safety < 0.5f * bravery)
         {
-            action = "attack";
-            creature.SetAction(action, isRival);
-            return;
+            Transform isRival = isRivalNearby(5f);
+            if (isRival != transform)
+            {
+                action = "attack";
+                creature.SetAction(action, isRival);
+                return;
+            }
         }
         //needs
         /*if(safety < 0.5f*bravery)//maybe make this threshold based on something??

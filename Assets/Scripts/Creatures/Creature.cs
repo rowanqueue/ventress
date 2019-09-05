@@ -50,6 +50,7 @@ public class Creature : MonoBehaviour
     public Item itemToBePickedUp;
     public bool simon;
     public int simonlevel;
+    public Transform simonSayer;
     public List<SoundMaker> friends;
     public List<Transform> rivals;
     // Start is called before the first frame update
@@ -75,6 +76,10 @@ public class Creature : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (simon)
+        {
+            transform.LookAt(simonSayer);
+        }
         //deal with showing speak
         if (Time.time > whenSpoke + howLongShowSpeak)
         {
@@ -160,6 +165,12 @@ public class Creature : MonoBehaviour
                     {
                         //attack them
                         Target.GetComponent<Health>().Hurt();
+                        mind.safety = 1;
+                        SetPathState(0);
+                        mind.Decide();
+                    }
+                    if(mind.safety < 0.6f * mind.bravery)
+                    {
                         SetPathState(0);
                         mind.Decide();
                     }
@@ -201,6 +212,10 @@ public class Creature : MonoBehaviour
                             simonlevel = 0;
                             Debug.Log("FRIENDS");
                             friends.Add(cmd.speaker);
+                            if (rivals.Contains(cmd.speaker.transform))
+                            {
+                                rivals.Remove(cmd.speaker.transform);
+                            }
                         }
                         else
                         {
@@ -302,6 +317,7 @@ public class Creature : MonoBehaviour
                             simon = true;
                             simonlevel = 1;
                             cmd.speaker.SetSimon(this);
+                            simonSayer = cmd.speaker.transform;
                             Speak(mind.name.Substring(0, simonlevel));
                         }
                         else
