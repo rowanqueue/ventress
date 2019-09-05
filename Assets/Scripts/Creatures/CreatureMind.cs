@@ -6,14 +6,14 @@ using UnityEngine;
 //what the creature thinks!!
 public class CreatureMind : MonoBehaviour
 {
-    Creature creature;
+    public Creature creature;
     public string name;
     //stats
     public float Size
     {
-        get { return size * currentBabyPercent; }//get the ACTUAL SIZE AT THIS MOMENT
+        get { return Mathf.Lerp(0.5f * size, size, age); }//get the ACTUAL SIZE AT THIS MOMENT
     }
-    float size;//0.5-1.5, babies start at 0.25 of their adult size and grow
+    float size;//1.0-2.0, babies start at 0.5 of their adult size and grow
     public float age;//0 is baby, 1 is adult, 3 is dead
 
     public float bravery;//these numbers are multiplied by 0.5 to generate whatever threshold
@@ -57,7 +57,7 @@ public class CreatureMind : MonoBehaviour
         creature = GetComponent<Creature>();
         //stats
         age = CustomRange(0f, 2f);
-        size = CustomRange(0.5f, 1.5f);
+        size = CustomRange(1f, 2f);
         //needs
         safety = CustomRange(0f, 1f);
         hunger = CustomRange(0f, 1f);
@@ -67,7 +67,7 @@ public class CreatureMind : MonoBehaviour
         emotion = Random.Range(0, 4);
 
         transformScale = transform.localScale.x;
-        float sizeEffect = Mathf.Lerp(0.25f * size, size, age) * transformScale;
+        float sizeEffect = Mathf.Lerp(0.5f * size, size, age) * transformScale;
         transform.localScale = new Vector3(sizeEffect, sizeEffect, sizeEffect);
     }
     float CustomRange(float min, float max)
@@ -110,10 +110,18 @@ public class CreatureMind : MonoBehaviour
         //if they're a baby, set their size
         if(age < 1f)
         {
-            float sizeEffect = Mathf.Lerp(0.25f * size, size, age)*transformScale;
+            float sizeEffect = Mathf.Lerp(0.5f * size, size, age)*transformScale;
             transform.localScale = new Vector3(sizeEffect, sizeEffect, sizeEffect);
         }
         //safety
+        if(isRivalNearby(2f) != transform)
+        {
+            safety -= 0.1f;
+        }
+        else
+        {
+            safety += 0.1f;
+        }
         //if unsafe, safety goes down
         //if safe, goes up
         //if below certain number, increase bravery
@@ -178,6 +186,11 @@ public class CreatureMind : MonoBehaviour
         hunger = CustomRound(hunger);
         shelter = CustomRound(shelter);
         play = CustomRound(play);
+
+        safety = Mathf.Clamp(safety, 0f, 1f);
+        hunger = Mathf.Clamp(hunger, 0f, 1f);
+        shelter = Mathf.Clamp(shelter, 0f, 1f);
+        play = Mathf.Clamp(play, 0f, 1f);
     }
     public void Eat()
     {
@@ -186,6 +199,16 @@ public class CreatureMind : MonoBehaviour
     public void Decide()//based on current situation, what do
     {
         action = "";
+        if(safety < 0.5f * bravery)
+        {
+            Transform isRival = isRivalNearby(5f);
+            if (isRival != transform)
+            {
+                action = "attack";
+                creature.SetAction(action, isRival);
+                return;
+            }
+        }
         //needs
         /*if(safety < 0.5f*bravery)//maybe make this threshold based on something??
         {
@@ -214,13 +237,10 @@ public class CreatureMind : MonoBehaviour
         }
         if(shelter < 0.5f*social)
         {
-            if (isMyShelterNearby(10f))
-            {
-                action = "shelter";
-                creature.SetAction(action, tribe.shelter);
-                return;
-            }
-            else if (shelter < 0.1f)//they're more desperate for shelter
+            action = "shelter";
+            creature.SetAction(action, tribe.shelter);
+            return;
+            if (shelter < 0.1f)//they're more desperate for shelter
             {
                 //bool isAShelterNearby = Random.value < 0.5f;//maybe go to a different shelter
                 //action = "Go to a different shelter";
@@ -244,7 +264,7 @@ public class CreatureMind : MonoBehaviour
     }
     Transform DetectNearbyTag(string tag)//just returns one, not
     {
-        Collider[] hitColliders = Physics.OverlapSphere(transform.position, 10f);
+        Collider[] hitColliders = Physics.OverlapSphere(transform.position, 15f);
         foreach (Collider c in hitColliders)
         {
             if (c.transform == transform)
@@ -270,5 +290,21 @@ public class CreatureMind : MonoBehaviour
             isIt = true;
         }
         return isIt;
+    }
+    Transform isRivalNearby(float distance)
+    {
+        Collider[] hitColliders = Physics.OverlapSphere(transform.position, 15f);
+        foreach (Collider c in hitColliders)
+        {
+            if (c.transform == transform)
+            {
+                continue;
+            }
+            if (creature.rivals.Contains(c.transform))
+            {
+                return c.transform;
+            }
+        }
+        return transform;
     }
 }

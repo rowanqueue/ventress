@@ -4,22 +4,26 @@ using UnityEngine;
 
 public enum Verb
 {
-    Default,Move,Scatter,Get,Put
+    Default,Move,Scatter,Get,Put,What,Sing
 }
 public enum Noun
 {
-    Default,Me,You
+    Default,Me,You,This
 }
 public struct Command
 {
     public Verb verb;
     public Noun noun;
-    public Transform speaker;
-    public Command(Transform sp, Verb v, Noun n)
+    public SoundMaker speaker;
+    public string custom;
+    public Transform subject;
+    public Command(SoundMaker sp, Verb v = Verb.Default, Noun n=Noun.Default,string custom = "", Transform subject = null)
     {
         this.speaker = sp;
         this.verb = v;
         this.noun = n;
+        this.subject = subject;
+        this.custom = custom;
     }
 }
 public static class Language
@@ -29,22 +33,46 @@ public static class Language
         {"wa",Verb.Move },
         {"ws",Verb.Scatter },
         {"da",Verb.Get},
-        {"ds",Verb.Put }
+        {"ds",Verb.Put },
+        {"wd", Verb.What },
+        {"aa", Verb.Sing }
     };
     static Dictionary<string, Noun> nouns = new Dictionary<string, Noun>()
     {
         {"a",Noun.Me },
-        {"s", Noun.You}
+        {"s", Noun.You},
+        {"w",Noun.This}
     };
-    public static void TakeMessage(string msg,SoundMaker talker)
+    public static void TakeMessage(string msg,SoundMaker talker, Transform subject = null)
     {
-        Command cmd = new Command(talker.transform, Verb.Default,Noun.Default);
+        //deal with simon
+        if (talker.simonSayer)
+        {
+            if(Time.time > talker.timeWhenSimonDies)
+            {
+                talker.simonSayer = false;
+                talker.simonSayee.simon = false;
+                talker.simonSayee = null;
+            }
+            else
+            {
+                talker.timeWhenSimonDies = Time.time + talker.simonTimeCheck;
+            }
+        }
+        //end
+        Command cmd = new Command(talker);
         string[] message = msg.Split(' ');
         bool hasVerb = false;
         bool hasNoun = false;
         foreach(string word in message)
         {
-            if(hasVerb && hasNoun)
+            //this ain't a verb or a noun...
+            if (word.Length == 3 || word.Length == 5 || talker.simonSayer)
+            {
+                cmd.custom = word;
+                continue;
+            }
+            if (hasVerb && hasNoun)
             {
                 break;
             }
@@ -61,18 +89,25 @@ public static class Language
                 continue;
             }
         }
+        if (subject)
+        {
+            cmd.subject = subject;
+            Debug.Log("su");
+        }
         if(hasVerb && hasNoun)//congrats you have a whole command!
         {
             talker.MakeSound(cmd);
         }
         else//uh oh not a whole command
         {
-            if (hasVerb)
+            /*if (hasVerb)
             {
-                //assume that the noun is me
-                cmd.noun = Noun.Me;
                 talker.MakeSound(cmd);
-            }
+            }else if (talker.simonSayer)//you're playing simon says
+            {
+                talker.MakeSound(cmd);
+            }*/
+            talker.MakeSound(cmd);
         }
 
     }

@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 public enum ItemTrait
 {
-    Dull,Shiny
+    Default,Dull,Shiny
 }
 
 public class Item : MonoBehaviour
 {
     public bool held;
     public bool thrown;//some items are activated when thrown
+    public bool picked;//picked up for the first time or not
     public ItemTrait trait;
     [HideInInspector]
     public Rigidbody rb;
@@ -21,6 +22,7 @@ public class Item : MonoBehaviour
     public virtual void Awake()
     {
         rb = GetComponent<Rigidbody>();
+        rb.isKinematic = true;
         collider = GetComponent<Collider>();
         mr = GetComponent<MeshRenderer>();
     }
@@ -29,6 +31,7 @@ public class Item : MonoBehaviour
         TurnOff();
         held = true;
         thrown = false;
+        picked = true;
     }
     public void PutDown()
     {
