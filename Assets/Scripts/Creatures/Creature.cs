@@ -53,6 +53,8 @@ public class Creature : MonoBehaviour
     public Transform simonSayer;
     public List<SoundMaker> friends;
     public List<Transform> rivals;
+    List<ParticleSystem> effects;
+    enum Effect { Frustrated,Confused,Accepted,Friendship,Following};
     // Start is called before the first frame update
     void Awake()
     {
@@ -71,6 +73,15 @@ public class Creature : MonoBehaviour
         sm = GetComponent<SoundMaker>();
         ih = gameObject.AddComponent<ItemHandler>();
         health = gameObject.AddComponent<Health>();
+        effects = new List<ParticleSystem>();
+        foreach(Transform child in transform)
+        {
+            ParticleSystem s = child.GetComponent<ParticleSystem>();
+            if (s)
+            {
+                effects.Add(s);
+            }
+        }
     }
 
     // Update is called once per frame
@@ -133,6 +144,10 @@ public class Creature : MonoBehaviour
                 wanderState = -1;
                 wanderAI.enabled = false;
                 goAi.enabled = true;
+                if(Target == PlayerController.instance.transform)
+                {
+                    PlayEffect(Effect.Following);
+                }
                 /*if(Time.time > whenJoined + followTime && Vector3.Distance(goAi.target.position,transform.position) > 5f)
                 {
                     SetPathState(0);
@@ -194,6 +209,10 @@ public class Creature : MonoBehaviour
         }
 
     }
+    void PlayEffect(Effect e)
+    {
+        effects[(int)e].Play();
+    }
     public void Hear(Command cmd)//this is where the creature interprets the command!!
     {
         switch (cmd.verb)
@@ -212,6 +231,7 @@ public class Creature : MonoBehaviour
                             simonlevel = 0;
                             Debug.Log("FRIENDS");
                             friends.Add(cmd.speaker);
+                            PlayEffect(Effect.Friendship);
                             if (rivals.Contains(cmd.speaker.transform))
                             {
                                 rivals.Remove(cmd.speaker.transform);
@@ -227,6 +247,10 @@ public class Creature : MonoBehaviour
                         Speak(mind.name.Substring(0, simonlevel));
                     }
                 }
+                else
+                {
+                    PlayEffect(Effect.Confused);
+                }
                 break;
             case Verb.Move:
                 switch (cmd.noun)
@@ -236,6 +260,7 @@ public class Creature : MonoBehaviour
                         {
                             Target = cmd.speaker.transform;
                             SetPathState(1);
+                            PlayEffect(Effect.Accepted);
                         }
                         break;
                     default:
@@ -246,6 +271,7 @@ public class Creature : MonoBehaviour
                             {
                                 Target = item.transform;
                                 SetPathState(1);
+                                PlayEffect(Effect.Accepted);
                             }
                         }
                         break;
@@ -258,6 +284,7 @@ public class Creature : MonoBehaviour
                         if (Target == cmd.speaker.transform)
                         {
                             SetPathState(0);
+                            PlayEffect(Effect.Accepted);
                         }
                         break;
                     default:
@@ -274,6 +301,7 @@ public class Creature : MonoBehaviour
                         itemToBePickedUp = item;
                         Target = item.transform;
                         SetPathState(1);
+                        PlayEffect(Effect.Accepted);
                     }
                 }
                 break;
@@ -284,9 +312,11 @@ public class Creature : MonoBehaviour
                     {
                         case Noun.Me:
                             ih.GiveItem(PlayerController.instance.ih);
+                            PlayEffect(Effect.Accepted);
                             break;
                         default:
                             ih.DropItem();
+                                                        PlayEffect(Effect.Accepted);
                             break;
                     }
                 }

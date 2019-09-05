@@ -100,13 +100,14 @@ public static class Language
         }
         else//uh oh not a whole command
         {
-            if (hasVerb)
+            /*if (hasVerb)
             {
                 talker.MakeSound(cmd);
             }else if (talker.simonSayer)//you're playing simon says
             {
                 talker.MakeSound(cmd);
-            }
+            }*/
+            talker.MakeSound(cmd);
         }
 
     }
