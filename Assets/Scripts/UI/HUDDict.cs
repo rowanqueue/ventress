@@ -5,8 +5,8 @@ using UnityEngine.UI;
 
 public class HUDDict : MonoBehaviour
 {
-    public Dictionary<Verb, string> dict_verbs = new Dictionary<Verb, string>();
-    public Dictionary<Noun, string> dict_nouns = new Dictionary<Noun, string>();
+   //public Dictionary<Verb, string> dict_verbs = new Dictionary<Verb, string>();
+   //public Dictionary<Noun, string> dict_nouns = new Dictionary<Noun, string>();
     public GameObject entry;
     public Text entryText;
     public Button verbsButton;
@@ -18,10 +18,7 @@ public class HUDDict : MonoBehaviour
     void Start()
     {
         entryText = entry.GetComponent<Text>();
-        dict_verbs.Add(Verb.Move, "wa");
-        dict_verbs.Add(Verb.Scatter, "ws");
-        dict_nouns.Add(Noun.Me, "a");
-        dict_nouns.Add(Noun.You, "s");
+        
         entryText.text = null;
         //ShowVerbs();
 

@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!21 &-8486855712053954648
+--- !u!21 &-8001128498647444394
 Material:
   serializedVersion: 6
   m_ObjectHideFlags: 0
@@ -32,7 +32,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 161721017272090308}
+        m_Texture: {fileID: 6653974658128672917}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _OutlineTex:
@@ -114,7 +114,7 @@ MonoBehaviour:
   m_Name: Avenir Next SDF
   m_EditorClassIdentifier: 
   hashCode: 1860436689
-  material: {fileID: -8486855712053954648}
+  material: {fileID: -8001128498647444394}
   materialHashCode: 940761274
   m_Version: 1.1.0
   m_SourceFontFileGUID: 9cffa81a1dbcb46fe8ca348661dc19c6
@@ -1908,7 +1908,7 @@ MonoBehaviour:
     m_GlyphIndex: 345
     m_Scale: 1
   m_AtlasTextures:
-  - {fileID: 161721017272090308}
+  - {fileID: 6653974658128672917}
   m_AtlasTextureIndex: 0
   m_UsedGlyphRects:
   - m_X: 0
@@ -2563,8 +2563,8 @@ MonoBehaviour:
     packingMode: 4
     atlasWidth: 512
     atlasHeight: 512
-    characterSetSelectionMode: 0
-    characterSequence: 32 - 126, 160, 8203, 8230, 9633
+    characterSetSelectionMode: 6
+    characterSequence: 20-7E,A0,200B,2026
     referencedFontAssetGUID: 
     referencedTextAssetGUID: 
     fontStyle: 0
@@ -2599,7 +2599,7 @@ MonoBehaviour:
   boldSpacing: 7
   italicStyle: 35
   tabSize: 10
---- !u!28 &161721017272090308
+--- !u!28 &6653974658128672917
 Texture2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

@@ -55,6 +55,7 @@ public class Creature : MonoBehaviour
     public List<Transform> rivals;
     List<ParticleSystem> effects;
     enum Effect { Frustrated,Confused,Accepted,Friendship,Following};
+    ChatLog chatLog;
     // Start is called before the first frame update
     void Awake()
     {
@@ -74,6 +75,7 @@ public class Creature : MonoBehaviour
         ih = gameObject.AddComponent<ItemHandler>();
         health = gameObject.AddComponent<Health>();
         effects = new List<ParticleSystem>();
+        chatLog = ChatLog.instance;
         foreach(Transform child in transform)
         {
             ParticleSystem s = child.GetComponent<ParticleSystem>();
@@ -87,6 +89,10 @@ public class Creature : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //text looks at you
+        //transform.LookAt(2 * transform.position - lookingAt.position);
+
+        text.transform.LookAt(2 * transform.position - PlayerController.instance.gameObject.transform.position);
         if (simon)
         {
             transform.LookAt(simonSayer);
@@ -452,5 +458,6 @@ public class Creature : MonoBehaviour
         Language.TakeMessage(message, sm);
         text.text = message;
         whenSpoke = Time.time;
+        chatLog.TakeMessage(mind.name +": " + message + "\n");
     }
 }
