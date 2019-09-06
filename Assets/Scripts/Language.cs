@@ -17,13 +17,15 @@ public struct Command
     public SoundMaker speaker;
     public string custom;
     public Transform subject;
-    public Command(SoundMaker sp, Verb v = Verb.Default, Noun n=Noun.Default,string custom = "", Transform subject = null)
+    public string plain;
+    public Command(SoundMaker sp, Verb v = Verb.Default, Noun n = Noun.Default, string custom = "", Transform subject = null, string plain = "")
     {
         this.speaker = sp;
         this.verb = v;
         this.noun = n;
         this.subject = subject;
         this.custom = custom;
+        this.plain = plain;
     }
 }
 public static class Language
@@ -94,6 +96,7 @@ public static class Language
             cmd.subject = subject;
             Debug.Log("su");
         }
+        cmd.plain = msg;
         if(hasVerb && hasNoun)//congrats you have a whole command!
         {
             talker.MakeSound(cmd);

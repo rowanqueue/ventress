@@ -251,6 +251,11 @@ MonoBehaviour:
   timeWhenSimonDies: 0
   simonTimeCheck: 2
   simonSayee: {fileID: 0}
+  sounds:
+  - {fileID: 8300000, guid: 4c360ada21533f34e839fbc4e1568e9b, type: 3}
+  - {fileID: 8300000, guid: ae7970af5276b824ab2c2a012dd25670, type: 3}
+  - {fileID: 8300000, guid: cd253af5bc4fc00478678f7044570874, type: 3}
+  - {fileID: 8300000, guid: a02b8c20562b90e46808b46373e464c1, type: 3}
 --- !u!82 &2125164917
 AudioSource:
   m_ObjectHideFlags: 0

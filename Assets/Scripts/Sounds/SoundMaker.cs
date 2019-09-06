@@ -17,9 +17,46 @@ public class SoundMaker : MonoBehaviour
     AudioSource audio;
     //sound notes w,a,s,d
     List<char> notes = new List<char> { 'w', 'a', 's', 'd' };
+    public List<AudioClip> sounds = new List<AudioClip>();
+    bool playingNotes;
+    Command cmd;
+    float nextNoteTime;
+    int nextNoteToPlay;
+    int index;
     void Awake()
     {
         audio = GetComponent<AudioSource>();
+    }
+    private void Update()
+    {
+        if (playingNotes)
+        {
+            if(Time.time > nextNoteTime)
+            {
+                audio.PlayOneShot(sounds[nextNoteToPlay]);
+                index++;
+                if (index >= cmd.plain.Length)
+                {
+                    playingNotes = false;
+                    index = 0;
+                }
+                else
+                {
+                    char note = cmd.plain[index];
+                    if(note == ' ') { index++; note = cmd.plain[index]; }
+                    int i = 0;
+                    for (; i < notes.Count; i++)
+                    {
+                        if(notes[i] == note)
+                        {
+                            nextNoteToPlay = i;
+                            break;
+                        }
+                    }
+                    nextNoteTime = Time.time + 0.5f;
+                }
+            }
+        }
     }
     List<Creature> DetectNearbyCreatures()
     {
@@ -49,10 +86,26 @@ public class SoundMaker : MonoBehaviour
             }
         }
     }
-    public void MakeSound(Command cmd)
+    public void MakeSound(Command command)
     {
         creatures = DetectNearbyCreatures();
-        AffectCreatures(cmd);
+        AffectCreatures(command);
+        //play sounds here
+        this.cmd = command;
+        index = 0;
+        playingNotes = true;
+        char note = cmd.plain[index];
+        if (note == ' ') { index++; note = cmd.plain[index]; }
+        int i = 0;
+        for (; i < notes.Count; i++)
+        {
+            if (notes[i] == note)
+            {
+                nextNoteToPlay = i;
+                break;
+            }
+        }
+        nextNoteTime = Time.time + 0.5f;
     }
     public void SetSimon(Creature creature)
     {
