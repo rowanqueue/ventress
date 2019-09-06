@@ -11,6 +11,7 @@ public class Tribe : MonoBehaviour
 
     [Range(0f, 1f)]
     public float needToFollowPercent = 1f;//how many of the tribe has to follow the chief for them to behappy
+    public List<Transform> rivals;
     // Start is called before the first frame update
     void Awake()
     {
@@ -30,7 +31,22 @@ public class Tribe : MonoBehaviour
             member.name = RandomName(names);
             names.Add(member.name);
         }
+    }
+    private void Start()
+    {
         FindChief();
+        //give them some friends
+        foreach (CreatureMind member in members)
+        {
+            if (member != chief)
+            {
+                member.creature.friends.Add(chief.creature.sm);
+            }
+            foreach(Transform rival in rivals)
+            {
+                member.creature.rivals.Add(rival);
+            }
+        }
     }
     string RandomName(List<string> names)//generate a name that isn't in the list
     {
@@ -57,12 +73,10 @@ public class Tribe : MonoBehaviour
     void FindChief()
     {
         CreatureMind tempChief = members[0];
-        float biggestSize = tempChief.Size;
         for (int i = 1; i < members.Count; i++)
         {
-            if(members[i].Size > biggestSize)
+            if(members[i].Size > tempChief.Size)
             {
-                biggestSize = members[i].Size;
                 tempChief = members[i];
             }
         }

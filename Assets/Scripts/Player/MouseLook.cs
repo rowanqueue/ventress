@@ -32,11 +32,6 @@ public class MouseLook : MonoBehaviour {
                 0
             );
 
-        if (Input.GetMouseButtonDown(1) || (!Input.GetMouseButton(1) && Input.GetMouseButtonDown(0)))
-        {
-            Cursor.visible = false; //hides mouse cursor
-            Cursor.lockState = CursorLockMode.Locked; //locks mouse in center of screen
-        }
 	}
 
     public void FadeIn(float fadeTime)
