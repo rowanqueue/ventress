@@ -4,22 +4,28 @@ using UnityEngine;
 
 //start test of what the creature should think, largely for debugging rn
 //what the creature thinks!!
+//only for chief, should only cover talking and thinking (also commands from player later)
 public class CreatureMind : MonoBehaviour
 {
     public Creature creature;
-    public string name;
-    //stats
-    public float Size
-    {
-        get { return Mathf.Lerp(0.5f * size, size, age); }//get the ACTUAL SIZE AT THIS MOMENT
-    }
-    float size;//1.0-2.0, babies start at 0.5 of their adult size and grow
-    public float age;//0 is baby, 1 is adult, 3 is dead
 
     public float bravery;//these numbers are multiplied by 0.5 to generate whatever threshold
     public float weight;//determines its threshold for being hungry
     public float social;//determines threshold for shelter
     public float fun;//determines threshold for play
+
+    //testing!
+    TextMesh text;
+    float whenSpoke;
+    float howLongShowSpeak = 2f;
+
+    //test soundmaking
+    public SoundMaker sm;
+    public bool simon;
+    public int simonlevel;
+    public Transform simonSayer;
+    public List<SoundMaker> friends;
+    public List<Transform> rivals;
 
     //needs where 1 is satisfied, 0 is DEAD
     public float safety;
@@ -29,14 +35,6 @@ public class CreatureMind : MonoBehaviour
 
     //emotions we will figure out later
     public int emotion;//0 aggressive; 1 passive; 2 paranoid; 3 helpful
-
-    //tribe
-    public Tribe tribe;
-    public bool isChief;
-    public bool IsFollowingChief
-    {
-        get { return creature.pathState == 1 && creature.Target != null && creature.Target == tribe.chief.transform; }
-    }
 
     //action
     public string action;
@@ -49,15 +47,12 @@ public class CreatureMind : MonoBehaviour
     float nextDecisionTime;
     float decisionPeriod = 5f;
 
-    //datta about world
-    float transformScale;
+    public Tribe tribe;
+
     public List<ItemTrait> likes;
-    void Start()
+    void Awake()
     {
         creature = GetComponent<Creature>();
-        //stats
-        age = CustomRange(0f, 2f);
-        size = CustomRange(1f, 2f);
         //needs
         safety = CustomRange(0f, 1f);
         hunger = CustomRange(0f, 1f);
@@ -65,10 +60,11 @@ public class CreatureMind : MonoBehaviour
         play = CustomRange(0f, 1f);
         //emotions
         emotion = Random.Range(0, 4);
-
-        transformScale = transform.localScale.x;
-        float sizeEffect = Mathf.Lerp(0.5f * size, size, age) * transformScale;
-        transform.localScale = new Vector3(sizeEffect, sizeEffect, sizeEffect);
+        text = transform.GetChild(0).GetComponent<TextMesh>();
+        text.text = "";
+        //test soundmaking
+        sm = GetComponent<SoundMaker>();
+        rivals = new List<Transform>();
     }
     float CustomRange(float min, float max)
     {
@@ -84,6 +80,15 @@ public class CreatureMind : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (simon)
+        {
+            transform.LookAt(simonSayer);
+        }
+        //deal with showing speak
+        if (Time.time > whenSpoke + howLongShowSpeak)
+        {
+            text.text = "";
+        }
         if (Time.time > needsUpdateTime)
         {
             needsUpdateTime = Time.time + 1;
@@ -94,25 +99,22 @@ public class CreatureMind : MonoBehaviour
             Decide();
             nextDecisionTime = Time.time + decisionPeriod;
             //test screaming
-            if (isChief)
+            if (!tribe.TribeFollowingChief())//tribe aint following the chief
             {
-                if (!tribe.TribeFollowingChief())//tribe aint following the chief
-                {
-                    creature.Speak("wa a");//chief tells followers to follow them
-                }
+                Speak("wa a");//chief tells followers to follow them
             }
         }
     }
     public void UpdateNeeds()//another tick in the needs
     {
         //age them!
-        age += 0.01f;
+        //age += 0.01f;
         //if they're a baby, set their size
-        if(age < 1f)
+        /*if(age < 1f)
         {
             float sizeEffect = Mathf.Lerp(0.5f * size, size, age)*transformScale;
             transform.localScale = new Vector3(sizeEffect, sizeEffect, sizeEffect);
-        }
+        }*/
         //safety
         if(isRivalNearby(2f) != transform)
         {
@@ -182,10 +184,6 @@ public class CreatureMind : MonoBehaviour
         //if below certain number, decrease fun
 
         //fix all the numbers
-        age = CustomRound(age);
-        hunger = CustomRound(hunger);
-        shelter = CustomRound(shelter);
-        play = CustomRound(play);
 
         safety = Mathf.Clamp(safety, 0f, 1f);
         hunger = Mathf.Clamp(hunger, 0f, 1f);
@@ -262,6 +260,12 @@ public class CreatureMind : MonoBehaviour
         //needs satisfied, do tribe stuff or random
         action = "Work for tribe";
     }
+    public void Speak(string message)
+    {
+        Language.TakeMessage(message, sm);
+        text.text = message;
+        whenSpoke = Time.time;
+    }
     Transform DetectNearbyTag(string tag)//just returns one, not
     {
         Collider[] hitColliders = Physics.OverlapSphere(transform.position, 15f);
@@ -300,7 +304,7 @@ public class CreatureMind : MonoBehaviour
             {
                 continue;
             }
-            if (creature.rivals.Contains(c.transform))
+            if (rivals.Contains(c.transform))
             {
                 return c.transform;
             }

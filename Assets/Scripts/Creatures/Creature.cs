@@ -9,6 +9,18 @@ public class Creature : MonoBehaviour
     [HideInInspector]
     public CreatureMind mind;
 
+    public string name;
+    //stats
+    public float Size
+    {
+        get { return Mathf.Lerp(0.5f * size, size, age); }//get the ACTUAL SIZE AT THIS MOMENT
+    }
+    float size;//1.0-2.0, babies start at 0.5 of their adult size and grow
+    public float age;//0 is baby, 1 is adult, 3 is dead
+
+    //datta about world
+    float transformScale;
+
     //handle pathfinding
     public int pathState = 0;//0: wander, 1: go
     float nextDecision;
@@ -29,30 +41,25 @@ public class Creature : MonoBehaviour
     WanderingDestinationSetter wanderAI;
     RichAI ai;
 
+    //tribe
+    public Tribe tribe;
+    public bool IsFollowingChief
+    {
+        get { return pathState == 1 && Target != null && Target == tribe.chief.transform; }
+    }
+
     float whenJoined; //when started following
     float followTime = 5f;
-
-    //testing!
-    TextMesh text;
-    float whenSpoke;
-    float howLongShowSpeak = 2f;
 
     //test jump
     float jumpForce = 5;
     Rigidbody rb;
     int jumpTimeOffset;
 
-    //test soundmaking
-    public SoundMaker sm;
     ItemHandler ih;
     public Health health;
     [HideInInspector]
     public Item itemToBePickedUp;
-    public bool simon;
-    public int simonlevel;
-    public Transform simonSayer;
-    public List<SoundMaker> friends;
-    public List<Transform> rivals;
     List<ParticleSystem> effects;
     enum Effect { Frustrated,Confused,Accepted,Friendship,Following};
     // Start is called before the first frame update
@@ -67,10 +74,6 @@ public class Creature : MonoBehaviour
         //testing!
         rb = GetComponent<Rigidbody>();
         jumpTimeOffset = Random.Range(0, 9);
-        text = transform.GetChild(0).GetComponent<TextMesh>();
-        text.text = "";
-        //test soundmaking
-        sm = GetComponent<SoundMaker>();
         ih = gameObject.AddComponent<ItemHandler>();
         health = gameObject.AddComponent<Health>();
         effects = new List<ParticleSystem>();
@@ -82,20 +85,26 @@ public class Creature : MonoBehaviour
                 effects.Add(s);
             }
         }
+        age = CustomRange(0f, 2f);
+        size = CustomRange(1f, 2f);
+        transformScale = transform.localScale.x;
+        float sizeEffect = Mathf.Lerp(0.5f * size, size, age) * transformScale;
+        transform.localScale = new Vector3(sizeEffect, sizeEffect, sizeEffect);
     }
-
+    float CustomRange(float min, float max)
+    {
+        float num = Random.Range(min, max);
+        num = CustomRound(num);
+        return num;
+    }
+    float CustomRound(float num)
+    {
+        num = Mathf.Round(num * 100f) / 100f;
+        return num;
+    }
     // Update is called once per frame
     void Update()
     {
-        if (simon)
-        {
-            transform.LookAt(simonSayer);
-        }
-        //deal with showing speak
-        if (Time.time > whenSpoke + howLongShowSpeak)
-        {
-            text.text = "";
-        }
         if (ih.holdingItem)
         {
             ih.HoldItem(true);
@@ -152,7 +161,7 @@ public class Creature : MonoBehaviour
                 {
                     SetPathState(0);
                 }*/
-                if (goAi.ready && mind.action == "eat")
+                /*if (goAi.ready && mind.action == "eat")
                 {
                     mind.Eat();
                     SetPathState(0);
@@ -189,7 +198,7 @@ public class Creature : MonoBehaviour
                         SetPathState(0);
                         mind.Decide();
                     }
-                }
+                }*/
                 if (itemToBePickedUp)
                 {
                     if (itemToBePickedUp.held)
@@ -213,11 +222,23 @@ public class Creature : MonoBehaviour
     {
         effects[(int)e].Play();
     }
+    public void Die()
+    {
+        Destroy(this.gameObject);
+    }
+    public void SetPathState(int i)
+    {
+        pathState = i;
+        if (i == 0)
+        {
+            Target = null;
+        }
+    }
     public void Hear(Command cmd)//this is where the creature interprets the command!!
     {
         switch (cmd.verb)
         {
-            case Verb.Default://wow you're playing simon says!!
+            /*case Verb.Default://wow you're playing simon says!!
                 if (simon)
                 {
                     string sofar = mind.name.Substring(0, simonlevel);
@@ -251,12 +272,13 @@ public class Creature : MonoBehaviour
                 {
                     PlayEffect(Effect.Confused);
                 }
-                break;
+                break;*/
             case Verb.Move:
                 switch (cmd.noun)
                 {
                     case Noun.Me:
-                        if (friends.Contains(cmd.speaker))
+                        //check for friends in a new way
+                        if (true/*mind.friends.Contains(cmd.speaker)*/)
                         {
                             Target = cmd.speaker.transform;
                             SetPathState(1);
@@ -316,12 +338,12 @@ public class Creature : MonoBehaviour
                             break;
                         default:
                             ih.DropItem();
-                                                        PlayEffect(Effect.Accepted);
+                            PlayEffect(Effect.Accepted);
                             break;
                     }
                 }
                 break;
-            case Verb.What:
+            /*case Verb.What:
                 switch (cmd.noun)
                 {
                     case Noun.Me:
@@ -337,8 +359,8 @@ public class Creature : MonoBehaviour
                         }
                         break;
                 }
-                break;
-            case Verb.Sing:
+                break;*/
+            /*case Verb.Sing:
                 switch (cmd.noun)
                 {
                     case Noun.You:
@@ -348,11 +370,11 @@ public class Creature : MonoBehaviour
                             simonlevel = 1;
                             cmd.speaker.SetSimon(this);
                             simonSayer = cmd.speaker.transform;
-                            Speak(mind.name.Substring(0, simonlevel));
+                            Speak(name.Substring(0, simonlevel));
                         }
                         else
                         {
-                            Speak(mind.name);
+                            Speak(name);
                         }
                         break;
                     default:
@@ -360,12 +382,12 @@ public class Creature : MonoBehaviour
                         {
                             if (cmd.custom == "ass")
                             {
-                                Speak(mind.tribe.chief.name);
+                                Speak(tribe.chief.name);
                             }
                         }
                         break;
                 }
-                break;
+                break;*/
         }
     }
     public string FindNameOfItem(Transform subject)
@@ -394,18 +416,6 @@ public class Creature : MonoBehaviour
         else
         {
             return ItemTrait.Dull;
-        }
-    }
-    public void Die()
-    {
-        Destroy(this.gameObject);
-    }
-    public void SetPathState(int i)
-    {
-        pathState = i;
-        if (i == 0)
-        {
-            Target = null;
         }
     }
     public void Jump()
@@ -446,11 +456,5 @@ public class Creature : MonoBehaviour
                 Target = target;
             }
         }
-    }
-    public void Speak(string message)
-    {
-        Language.TakeMessage(message, sm);
-        text.text = message;
-        whenSpoke = Time.time;
     }
 }

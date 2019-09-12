@@ -45,3 +45,13 @@ TRIBE - what does the tribe want to do
 ACTION- what are they going to do
 
 Tribes are basically just collections of puffballs
+
+
+
+ALL CREATURES NEED TO
+--do stuff
+--hear stuff
+
+CHIEFS NEED TO
+--say stuff
+--think stuff

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Tribe : MonoBehaviour
 {
-    public List<CreatureMind> members;
+    public List<Creature> members;
     public List<string> names;
     public Transform shelter;
     public CreatureMind chief;
@@ -15,16 +15,16 @@ public class Tribe : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
-        members = new List<CreatureMind>();
+        members = new List<Creature>();
         foreach(Transform child in transform)
         {
             if (child.gameObject.activeSelf && child.CompareTag("Creature"))
             {
-                members.Add(child.GetComponent<CreatureMind>());
+                members.Add(child.GetComponent<Creature>());
             }
         }
         names = new List<string>();
-        foreach(CreatureMind member in members)
+        foreach(Creature member in members)
         {
             member.tribe = this;
             //tribe is going to name the creatures
@@ -35,18 +35,6 @@ public class Tribe : MonoBehaviour
     private void Start()
     {
         FindChief();
-        //give them some friends
-        foreach (CreatureMind member in members)
-        {
-            if (member != chief)
-            {
-                member.creature.friends.Add(chief.creature.sm);
-            }
-            foreach(Transform rival in rivals)
-            {
-                member.creature.rivals.Add(rival);
-            }
-        }
     }
     string RandomName(List<string> names)//generate a name that isn't in the list
     {
@@ -72,7 +60,7 @@ public class Tribe : MonoBehaviour
     }
     void FindChief()
     {
-        CreatureMind tempChief = members[0];
+        Creature tempChief = members[0];
         for (int i = 1; i < members.Count; i++)
         {
             if(members[i].Size > tempChief.Size)
@@ -80,19 +68,17 @@ public class Tribe : MonoBehaviour
                 tempChief = members[i];
             }
         }
-        if (chief && chief != tempChief)//theres a new chief in town, old chief go away
-        {
-            chief.isChief = false;
-        }
-        chief = tempChief;
-        chief.isChief = true;
+        tempChief.gameObject.AddComponent<CreatureMind>();
+        chief = tempChief.gameObject.GetComponent<CreatureMind>();
+        chief.tribe = this;
+
     }
     public bool TribeFollowingChief()//is the tribe following the chief?
     {
         int numWeNeedToStop = (int)(members.Count * needToFollowPercent);
-        foreach(CreatureMind member in members)
+        foreach(Creature member in members)
         {
-            if(member == chief)
+            if(member == chief.creature)
             {
                 numWeNeedToStop -= 1;
             }

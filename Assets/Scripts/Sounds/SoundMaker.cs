@@ -12,7 +12,7 @@ public class SoundMaker : MonoBehaviour
     public float timeWhenSimonDies;
     public float simonTimeCheck = 2f;
     [HideInInspector]
-    public Creature simonSayee;
+    public CreatureMind simonSayee;
     List<Creature> creatures;
     AudioSource audio;
     //sound notes w,a,s,d
@@ -91,23 +91,26 @@ public class SoundMaker : MonoBehaviour
         creatures = DetectNearbyCreatures();
         AffectCreatures(command);
         //play sounds here
-        this.cmd = command;
-        index = 0;
-        playingNotes = true;
-        char note = cmd.plain[index];
-        if (note == ' ') { index++; note = cmd.plain[index]; }
-        int i = 0;
-        for (; i < notes.Count; i++)
+        if (command.plain.Length > 1)
         {
-            if (notes[i] == note)
+            this.cmd = command;
+            index = 0;
+            playingNotes = true;
+            char note = cmd.plain[index];
+            if (note == ' ') { index++; note = cmd.plain[index]; }
+            int i = 0;
+            for (; i < notes.Count; i++)
             {
-                nextNoteToPlay = i;
-                break;
+                if (notes[i] == note)
+                {
+                    nextNoteToPlay = i;
+                    break;
+                }
             }
+            nextNoteTime = Time.time + 0.5f;
         }
-        nextNoteTime = Time.time + 0.5f;
     }
-    public void SetSimon(Creature creature)
+    public void SetSimon(CreatureMind creature)
     {
         simonSayer = true;
         timeWhenSimonDies = Time.time + simonTimeCheck;

@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 929851115894994706}
   - component: {fileID: 929851115894994703}
-  - component: {fileID: 80063589}
   - component: {fileID: 6204996714148460348}
   - component: {fileID: 929851115894994707}
   - component: {fileID: 929851115894994709}
@@ -61,48 +60,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mind: {fileID: 0}
+  name: 
+  age: 0
   pathState: 0
   brainTime: 2
   wanderState: 0
   maxSpeed: 0
   target: {fileID: 0}
-  sm: {fileID: 0}
   health: {fileID: 0}
   itemToBePickedUp: {fileID: 0}
-  simon: 0
-  simonlevel: 0
-  simonSayer: {fileID: 0}
-  friends: []
-  rivals: []
---- !u!114 &80063589
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 929851115894994715}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bac37cce6db62dd42a55198240fd2dd2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  creature: {fileID: 0}
-  name: 
-  age: 0
-  bravery: 0.5
-  weight: 0.5
-  social: 0.5
-  fun: 0.5
-  safety: 0.5
-  hunger: 0
-  shelter: 0
-  play: 0
-  emotion: 0
-  tribe: {fileID: 0}
-  isChief: 0
-  action: 
-  currentBabyPercent: 0
-  likes: 02000000
 --- !u!114 &6204996714148460348
 MonoBehaviour:
   m_ObjectHideFlags: 0
