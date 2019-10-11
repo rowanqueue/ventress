@@ -40,10 +40,12 @@ public class PlayerController : MonoBehaviour
     Vector3 groundContactNormal = Vector3.up;//the slope of whatever you're standing on
     LayerMask layerGround;
     MouseLook mouseLook;
+    Vector2 mousePos;
 
     // Start is called before the first frame update
     void Awake()
     {
+        mousePos = Input.mousePosition;
         instance = this;
         ih = gameObject.AddComponent<ItemHandler>();
         rb = GetComponent<Rigidbody>();
@@ -81,6 +83,7 @@ public class PlayerController : MonoBehaviour
         }
         if (lookEnabled == false && (Input.GetMouseButtonDown(1) || (!Input.GetMouseButton(1) && Input.GetMouseButtonDown(0))))
         {
+            mousePos = Input.mousePosition;
             Cursor.visible = false; //hides mouse cursor
             Cursor.lockState = CursorLockMode.Locked; //locks mouse in center of screen
         }
