@@ -42,6 +42,9 @@ public class PlayerController : MonoBehaviour
     MouseLook mouseLook;
     Vector2 mousePos;
 
+    //raycast data
+    public GameObject holePrefab;
+
     // Start is called before the first frame update
     void Awake()
     {
@@ -127,24 +130,25 @@ public class PlayerController : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             isFocusing = true;
-            if (!isSpeaking)
-            {
-                StartCoroutine(Coroutines.DoOverEasedTime(0.1f, Easing.Linear, t =>
-                {
-                    cam.fieldOfView = Mathf.Lerp(fov_default, fov_focus, t);
-                }));
-            }
+            Cast();
+            //if (!isSpeaking)
+            //{
+            //    StartCoroutine(Coroutines.DoOverEasedTime(0.1f, Easing.Linear, t =>
+            //    {
+            //        cam.fieldOfView = Mathf.Lerp(fov_default, fov_focus, t);
+            //    }));
+            //}
         }
         if (Input.GetMouseButtonUp(0))
         {
             isFocusing = false;
-            if (!isSpeaking)
-            {
-                StartCoroutine(Coroutines.DoOverEasedTime(0.1f, Easing.Linear, t =>
-                {
-                    cam.fieldOfView = Mathf.Lerp(fov_focus, fov_default, t);
-                }));
-            }
+            //if (!isSpeaking)
+            //{
+            //    StartCoroutine(Coroutines.DoOverEasedTime(0.1f, Easing.Linear, t =>
+            //    {
+            //        cam.fieldOfView = Mathf.Lerp(fov_focus, fov_default, t);
+            //    }));
+            //}
         }
         //focus code end
 
@@ -210,6 +214,28 @@ public class PlayerController : MonoBehaviour
                 ih.PickUpItem(hit.transform.GetComponent<Item>());
             }
         }
+    }
+    GameObject Cast()
+    {
+        RaycastHit hit;
+        Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+        if (Physics.Raycast(ray, out hit))
+        {
+            Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.forward) * hit.distance, Color.yellow);
+            Debug.Log("Did Hit");
+            if (hit.transform.gameObject.layer == 8) //ground
+            {
+                GameObject newHole = Instantiate(holePrefab, hit.point, Quaternion.identity);
+                Debug.Log("Dug");
+                return newHole;
+            }
+            if (hit.transform.gameObject.tag == "hole")
+            {
+                Debug.Log("its a hole");
+                return hit.transform.gameObject;
+            }
+        }
+        return hit.transform.gameObject;
     }
     void Move()
     {
