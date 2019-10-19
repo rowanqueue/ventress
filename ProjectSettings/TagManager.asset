@@ -8,6 +8,7 @@ TagManager:
   - Destructible
   - Creature
   - Food
+  - Hole
   layers:
   - Default
   - TransparentFX

@@ -67,6 +67,7 @@ MonoBehaviour:
   wanderState: 0
   maxSpeed: 0
   target: {fileID: 0}
+  tribe: {fileID: 0}
   health: {fileID: 0}
   itemToBePickedUp: {fileID: 0}
 --- !u!114 &6204996714148460348
@@ -5234,7 +5235,7 @@ TextMesh:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2369782221569620558}
-  m_Text: 0
+  m_Text: 
   m_OffsetZ: 0
   m_CharacterSize: 1
   m_LineSpacing: 1
