@@ -352,7 +352,7 @@ public class Creature : MonoBehaviour
                         {
                             simon = true;
                             simonlevel = 1;
-                            cmd.speaker.SetSimon(this);
+                            cmd.speaker.SetSimon(this.mind);
                             simonSayer = cmd.speaker.transform;
                             Speak(mind.name.Substring(0, simonlevel));
                         }

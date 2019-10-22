@@ -226,12 +226,16 @@ public class PlayerController : MonoBehaviour
             if (hit.transform.gameObject.layer == 8) //ground
             {
                 GameObject newHole = Instantiate(holePrefab, hit.point, Quaternion.identity);
+                PlantNeighborManager.instance.plants.Add(newHole.transform.GetComponent<Plant>());
                 Debug.Log("Dug");
                 return newHole;
             }
             if (hit.transform.gameObject.tag == "hole")
             {
                 Debug.Log("its a hole");
+                hit.transform.GetComponent<MeshRenderer>().enabled = false;
+                Plant plant = hit.transform.GetComponent<Plant>();
+                plant.type = PlantType.Shrub;
                 return hit.transform.gameObject;
             }
         }

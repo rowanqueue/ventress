@@ -26,7 +26,7 @@ public class Tribe : MonoBehaviour
         names = new List<string>();
         foreach(Creature member in members)
         {
-            member.tribe = this;
+            //member.tribe = this;
             //tribe is going to name the creatures
             member.name = RandomName(names);
             names.Add(member.name);
@@ -63,10 +63,10 @@ public class Tribe : MonoBehaviour
         Creature tempChief = members[0];
         for (int i = 1; i < members.Count; i++)
         {
-            if(members[i].Size > tempChief.Size)
+            /*if(members[i].Size > tempChief.Size)
             {
                 tempChief = members[i];
-            }
+            }*/
         }
         tempChief.gameObject.AddComponent<CreatureMind>();
         chief = tempChief.gameObject.GetComponent<CreatureMind>();
@@ -82,10 +82,10 @@ public class Tribe : MonoBehaviour
             {
                 numWeNeedToStop -= 1;
             }
-            if (member.IsFollowingChief)
+            /*if (member.IsFollowingChief)
             {
                 numWeNeedToStop -= 1;
-            }
+            }*/
         }
         if(numWeNeedToStop > 0)
         {
