@@ -43,17 +43,19 @@ public class PlantNeighborManager : MonoBehaviour
             //now set up lines
             foreach(Plant neighbor in plant.neighbors)
             {
-                GameObject objLr = Instantiate(line,transform);
+                GameObject objLr = Instantiate(line,plant.transform);
                 LineRenderer lr = objLr.GetComponent<LineRenderer>();
-                float distance = Vector3.Distance(plant.transform.position, neighbor.transform.position);
-                Color color = Color.Lerp(Color.green, Color.red, distance / maxDistance);
+                //float distance = Vector3.Distance(plant.transform.position, neighbor.transform.position);
+                //Color color = //Color.Lerp(Color.green, Color.red, distance / maxDistance);
                 lr.positionCount = 2;
                 lr.SetPosition(0, plant.transform.position+Vector3.up*0.25f);
                 lr.SetPosition(1, neighbor.transform.position + Vector3.up * 0.25f);
-                lr.startColor = color;
-                lr.endColor = color;
+                lr.startColor = Color.green;
+                lr.endColor = Color.blue;
+                plant.lines.Add(lr);
                 lines.Add(lr);
             }
+            plant.UpdateDependecies();
         }
     }
     void ClearConnections()
@@ -61,6 +63,11 @@ public class PlantNeighborManager : MonoBehaviour
         foreach(LineRenderer lr in lines)
         {
             Destroy(lr.gameObject);
+        }
+        foreach(Plant plant in plants)
+        {
+            plant.lines.Clear();
+            plant.neighbors.Clear();
         }
         lines.Clear();
     }

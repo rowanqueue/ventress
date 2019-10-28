@@ -45,9 +45,12 @@ public class PlayerController : MonoBehaviour
     //raycast data
     public GameObject holePrefab;
 
+    public PlantType type;
+
     // Start is called before the first frame update
     void Awake()
     {
+        type = PlantType.Spread;
         mousePos = Input.mousePosition;
         instance = this;
         ih = gameObject.AddComponent<ItemHandler>();
@@ -62,6 +65,26 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            int h = (int)type;
+            h--;
+            if(h < 1)
+            {
+                h = 5;
+            }
+            type = (PlantType)h;
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            int h = (int)type;
+            h++;
+            if (h > 5)
+            {
+                h = 1;
+            }
+            type = (PlantType)h;
+        }
         //movement
         float horizontal = 0;
         float vertical = 0;
@@ -230,12 +253,12 @@ public class PlayerController : MonoBehaviour
                 Debug.Log("Dug");
                 return newHole;
             }
-            if (hit.transform.gameObject.tag == "hole")
+            if (hit.transform.gameObject.tag == "Hole")
             {
                 Debug.Log("its a hole");
                 hit.transform.GetComponent<MeshRenderer>().enabled = false;
                 Plant plant = hit.transform.GetComponent<Plant>();
-                plant.type = PlantType.Shrub;
+                plant.SetType(type);
                 return hit.transform.gameObject;
             }
         }
