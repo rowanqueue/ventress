@@ -115,3 +115,17 @@ MonoBehaviour:
   - Shrub
   - Tree
   - Special
+  neighbors: []
+  lines: []
+  supportedBy: []
+  dependents: []
+  needs:
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  met: 0
+  good: {fileID: 2100000, guid: 39fd36f34c196a6429e81ace5404c69f, type: 2}
+  bad: {fileID: 2100000, guid: d7ab5cced7f31134f9417aff34c70c2b, type: 2}
