@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
@@ -47,6 +48,9 @@ public class PlayerController : MonoBehaviour
 
     public PlantType type;
 
+    //UI Data
+    RectTransform UiIndicator;
+
     // Start is called before the first frame update
     void Awake()
     {
@@ -60,6 +64,9 @@ public class PlayerController : MonoBehaviour
         layerGround = LayerMask.NameToLayer("Ground");
         Cursor.lockState = CursorLockMode.Locked;
         mouseLook = cam.gameObject.GetComponent<MouseLook>();
+
+        //ui
+        UiIndicator = GameObject.Find("Indicator").GetComponent<RectTransform>();
     }
 
     // Update is called once per frame
@@ -67,23 +74,28 @@ public class PlayerController : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
-            int h = (int)type;
-            h--;
-            if(h < 1)
-            {
-                h = 5;
-            }
-            type = (PlantType)h;
+            type = PlantType.Spread;
+            UiIndicator.anchoredPosition = new Vector2(UiIndicator.anchoredPosition.x,-50);
         }
         if (Input.GetKeyDown(KeyCode.Alpha2))
         {
-            int h = (int)type;
-            h++;
-            if (h > 5)
-            {
-                h = 1;
-            }
-            type = (PlantType)h;
+            type = PlantType.Grass;
+            UiIndicator.anchoredPosition = new Vector2(UiIndicator.anchoredPosition.x, -150);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha3))
+        {
+            type = PlantType.Shrub;
+            UiIndicator.anchoredPosition = new Vector2(UiIndicator.anchoredPosition.x, -250);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha4))
+        {
+            type = PlantType.Tree;
+            UiIndicator.anchoredPosition = new Vector2(UiIndicator.anchoredPosition.x, -350);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha5))
+        {
+            type = PlantType.Special;
+            UiIndicator.anchoredPosition = new Vector2(UiIndicator.anchoredPosition.x, -450);
         }
         //movement
         float horizontal = 0;
